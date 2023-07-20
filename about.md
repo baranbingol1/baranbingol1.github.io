@@ -1,4 +1,4 @@
 # About
 
-This is where you put the contents of your *About* page. Like all your pages, it's in [Markdown](https://guides.github.com/features/mastering-markdown/) format.
+Blog'a hoşgeldiniz! Burası bir yapay zeka mühendisliği öğrencisinin türkçe yapay zeka kaynağı eksikliği görmesi üzerine yapay zeka ve veri bilimi ile alakalı kavramların ve bazı frameworklerin türkçe bir şekilde açıklandığı bir blog. Okuyuculara faydalı olması dileğiyle!   
 
