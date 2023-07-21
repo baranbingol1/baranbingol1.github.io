@@ -115,7 +115,7 @@ I really enjoyed this. 8/10.
 Şimdi sentiment analysis(duygu analizi) yapmak için basit bir "pipeline" oluşturalım. 
 
 ```python
-# İstediğimiz modeli burda belirtebiliriz default olarak şuanlık [distilbert](https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english) kullanıyor
+# İstediğimiz modeli burda belirtebiliriz default olarak şuanlık distilbert modeli kullanıyor
 from transformers import pipeline
 
 classifier = pipeline('text-classification')
