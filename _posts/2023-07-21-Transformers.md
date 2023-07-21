@@ -65,6 +65,8 @@ Böylece daha hızlı ve efektif bir şekilde modelleri eğitebiliyoruz.
 
 ![](/images/transformer-arch.png "Makaledeki Transformer Yapısı")
 
+Transformer yapısının tam hali yukarıdaki resimde. Şu ana kadar konuştuklarımızın yanı sıra bu yapıda her katmanda bir "residual connection" ve normalization katmanları da var. Residual connectionlar(artık bağlantı) bir katmanın girdilerini oluşturduğu çıktılarada ekleyerek kendisinden sonraki katmana hem girdilerini hem de çıktılarını vererek ilerlemesini sağlıyor. Bu yapı ilk defa görüntü işleme algoritması olan ResNet'lerde karşımıza çıkıyor ve transformerlarda dahil birçok yerde kullanılıyor. Bu artık bağlantılar RNN'lerinde bir problemi olan vanishing gradient problemini çözer, modeli daha kolay eğitebilmemizi sağlar ve modelin performansını artırır. Birde normalization katmanlarını görüyoruz bu katman ise verinin çıktılarını normalize ederek daha stabil bir model eğitme süreci sağlar ayrıca overfitting gibi sorunların önüne geçer.
+
 ## ULMFiT
 
 NLP dünyasındaki gelişmelerin önünü açan bir başka önemli makale ise [ULMFiT](https://arxiv.org/abs/1801.06146). ULMFiT(Universal Language Model Fine-tuning) makalesi NLP'de o zamana kadar oluşmayan bir transfer learning standardı sağladı.
