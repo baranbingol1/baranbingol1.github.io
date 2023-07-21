@@ -106,7 +106,9 @@ Of all the superhero movies I've seen this is probably the one least focused on 
 He really does feel like an after-thought more than anything. 
 The movie is far more about Barry Allen and his mission. 
 Which makes it surprising to me just how much I enjoyed the film, because the one thing I do often get out of these films is enjoyment from the villain.
-I think people are going to have a good time with this one. It doesn't feel like the usual copy and paste template that the MCU has been throwing out for 15 years now and it is certainly a step up from everything non-Batman that DC has been doing recently. I really enjoyed this. 8/10.
+I think people are going to have a good time with this one.
+It doesn't feel like the usual copy and paste template that the MCU has been throwing out for 15 years now and it is certainly a step up from everything non-Batman that DC has been doing recently.
+I really enjoyed this. 8/10.
 """
 ```
 
