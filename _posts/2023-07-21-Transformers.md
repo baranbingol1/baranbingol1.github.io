@@ -89,12 +89,63 @@ Bu nispeten yeni NLP gelişmelerini ve gelecek olan NLP gelişmelerini deneyebil
 Bu örnekleri denemek istiyorsanız Google Colab veya Kaggle gibi ortamların notebooklarında denemenizi öneririm.
 
 ```python
-# Örnek metnimizi girelim.
-metin = """ """
+# IMDb üzerinde bulduğum The Flash filmine gelen bir yorum
+text = """
+I always start any review of a superhero movie by making it clear that these are not my types of movies and my opinion, for any superfans out there, should always be taken with a grain of salt. 
+Now with that in mind, I have to say 'The Flash' is about as much as I can enjoy one of these types of movies. 
+This was a very fun ride I'm happy to admit.
+The movie is basically fan-service on overdrive.
+Anything a mega-fan has always wanted to see is likely going to show up at some stage in this movie. 
+If that's your kind of thing then you are going to be in heaven.
+I found the pacing good. 
+The movie is just short of 2 and a half hours but that time goes by pretty quickly. 
+As usual in these types of superhero movies I found the final battle scene the weakest the film had to offer. 
+It got messy and convoluted and it was really the one part of the movie where I lost interest.
+Of all the superhero movies I've seen this is probably the one least focused on the villain.
+He really does feel like an after-thought more than anything. 
+The movie is far more about Barry Allen and his mission. 
+Which makes it surprising to me just how much I enjoyed the film, because the one thing I do often get out of these films is enjoyment from the villain.
+I think people are going to have a good time with this one. It doesn't feel like the usual copy and paste template that the MCU has been throwing out for 15 years now and it is certainly a step up from everything non-Batman that DC has been doing recently. I really enjoyed this. 8/10.
+"""
+```
+
+Şimdi sentiment analysis(duygu analizi) yapmak için basit bir "pipeline" oluşturalım. 
+
+```python
+# İstediğimiz modeli burda belirtebiliriz default olarak şuanlık [distilbert](https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english) kullanıyor
+from transformers import pipeline
+
+classifier = pipeline('text-classification')
 ```
 
 ```python
-# Prints '2'
-print(1+1)
+outputs = classifier(text)
+print(outputs)
 ```
 
+    [{'label': 'POSITIVE', 'score': 0.7585893869400024}]
+
+Aynı zamanda question-answering de yapabiliriz
+
+```python
+qa_pipe = pipeline("question-answering")
+q = "Did the person who write this enjoyed the movie ?"
+outputs = qa_pipe(question=q, context=text)
+print(outputs)
+```
+
+    {'score': 0.2294749617576599, 'start': 1510, 'end': 1538, 'answer': 'I really enjoyed this. 8/10.'}
+
+Uzun bir yazıyı özetlemesini istiyorsak 'summarization'da kullanabiliriz.
+
+```python
+sum_pipe = pipeline('summarization')
+outputs = sum_pipe(text)
+print(outputs)
+```
+
+    [{'summary_text': " 'The Flash' is about as much as I can enjoy one of these types of superhero movies . The movie is basically fan-service on overdrive . It doesn't feel like the usual copy and paste template that the MCU has been throwing out for 15 years ."}]
+
+Bunlar buzdağının sadece görünen kısmının ufak bir kısmı, daha fazlası için [HuggingFace NLP Tutorial](https://huggingface.co/learn/nlp-course/chapter0/1?fw=pt)
+
+Benim bu yazıda anlatacaklarım bu kadar umarım yararlı olmuştur!
