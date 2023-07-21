@@ -46,7 +46,7 @@ Encoder-Decoder:
 
 Encoder, girdi verilerini(örneğin bir metni) sayılarla temsil edeceği bir "last hidden state"e gönderir. Bu state daha sonrasında decoder içine girer ve bize çıktımızı verir.
 
-![](/images/encoder-decoder-basit-ornek.png "Basit bir TR-EN çevirisi, encoder-decoder örneği")
+![](/images/encoder-decoder-basit-ornek.PNG "Basit bir TR-EN çevirisi, encoder-decoder örneği")
 
 Bu yapı oldukça basit ve güzel olsada eksikliği vardır. 
 Encoder kendi içinde birden fazla RNN katmanıyla girdi sözcüklerini birbirleriyle anlamdırabilse bile Decoder yapısına bir state halinde bilgileri ulaştırması gerekir buda bilgi kaybına yol açar.
@@ -57,7 +57,7 @@ Encoder kendi içinde birden fazla RNN katmanıyla girdi sözcüklerini birbirle
 Attention yapısının ana fikri Decodera sadece tek bir input yerine erişebildiği her state için bir input vermektir.
 Attention yapısı ise bu inputlardan hangisinin daha öncelikli olduğunu belirleyen ağırlıklar koyar.
 
-![](/images/attention-mekanizmasi.png "Attention Mekanizması")
+![](/images/attention-mekanizmasi.PNG "Attention Mekanizması")
 
 Attention mekanizması her bir adımda hangi input ağırlıklarının daha önemli olduğunu değerlendirerek bize kelimeler arasında bir anlam(context) bulabilir.
 Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve attention outputları bir FFNN(feed forward neural network, klasik sinir ağı yapısı) yapısına gidiyor.
