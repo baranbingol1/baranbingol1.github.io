@@ -15,8 +15,8 @@ Başlamadan önce bu yazıda üstünden geçeceklerimizi özetlemek gerekirse:
 ## Transformerların Kısa Tarihi
 
 "Transformer" yapısı ilk defa 2017 yılında Google Research Team'in yarattığı etkiye göre görece ciddiyetsiz bir başlığa sahip olan ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762) makalesiyle dünyaya tanıtıldı.  
-Bu yapının en önemli özelliği, RNN ve LSTM gibi klasik NLP algoritmalarının kullandığı sıralı işleme mekanizması yerine "dikkat" mekanizmasını kullanıyor olması.
-Dikkat mekanizması olan "Attention"ın yapısının ne olduğunu anlamadan önce karşılaştırabilmek için Transformerlardan önce sıklıkla kullanılan NLP yapılarını, RNN ve LSTM'leri anlamak lazım.
+Bu yapının en önemli özelliği, RNN ve LSTM gibi klasik NLP algoritmalarının kullandığı sıralı işleme mekanizması yerine "dikkat" mekanizmasını etkili bir şekilde kullanıyor olması.
+Dikkat mekanizması olan "Attention"ın yapısının ve Transformerlardaki yerinin ne olduğunu anlamadan önce karşılaştırabilmek için Transformerlardan önce sıklıkla kullanılan NLP yapılarını, RNN ve LSTM'leri anlamak lazım.
 
 ## RNN ve LSTM Yapıları
 
@@ -48,19 +48,20 @@ Encoder, girdi verilerini(örneğin bir metni) sayılarla temsil edeceği bir "l
 
 ![](/images/encoder-decoder-basit-ornek.PNG "Basit bir TR-EN çevirisi, encoder-decoder örneği")
 
-Bu yapı oldukça basit ve güzel olsada eksikliği vardır. 
+Bu yapı oldukça basit ve sade olsada eksikliği vardır. 
 Encoder kendi içinde birden fazla RNN katmanıyla girdi sözcüklerini birbirleriyle anlamdırabilse bile Decoder yapısına bir state halinde bilgileri ulaştırması gerekir buda bilgi kaybına yol açar.
 Örneğin cümlenin başında geçen bir kelime cümlenin sonundaki bir kelimeyle bağlantılı olsa bile encoder bu bilgiyi veremeyebilir. Şanslıyiz ki bu problemi çözebilen Attention yapısı var.
 
 ## Attention Mekanizması
 
-Attention yapısının ana fikri Decodera sadece tek bir input yerine erişebildiği her state için bir input vermektir.
-Attention yapısı ise bu inputlardan hangisinin daha öncelikli olduğunu belirleyen ağırlıklar koyar.
+Encoder-Decoder yapısının ana eksikliğinin bilgi kaybı olduğundan bahsetmiştik.
+Decoder'a tek bir input vermek yerine, Encoder'un her bir outputunu input olarak vermek güzel bir çözüm gibi duruyor.
+Attention yapısı ise bu inputlardan hangisinin daha öncelikli olduğunu belirleyen ağırlıklar koyar ve Decoderda bu ağırlıklara göre outputunu oluşturur.
 
 ![](/images/attention-mekanizmasi.PNG "Attention Mekanizması")
 
-Attention mekanizması her bir adımda hangi input ağırlıklarının daha önemli olduğunu değerlendirerek bize kelimeler arasında bir anlam(context) bulabilir.
-Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve attention outputları bir FFNN(feed forward neural network, klasik sinir ağı yapısı) yapısına gidiyor.
+Attention mekanizması her bir adımda(Decoderun oluşturacağı her yeni kelimede) hangi input ağırlıklarının daha önemli olduğunu değerlendirerek bize kelimeler arasında bir anlam(context) sağlar.
+Bu yapının daha paralel bir şekilde gidebilmesi için Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve attention outputları bir FFNN(feed forward neural network, klasik sinir ağı yapısı) yapısına gidiyor.
 Böylece daha hızlı ve efektif bir şekilde modelleri eğitebiliyoruz.
 
 ![](/images/transformer-arch.png "Makaledeki Transformer Yapısı")
