@@ -60,7 +60,7 @@ Attention yapısı ise bu inputlardan hangisinin daha öncelikli olduğunu belir
 ![](/images/attention-mekanizmasi.png "Attention Mekanizması")
 
 Attention mekanizması her bir adımda hangi input ağırlıklarının daha önemli olduğunu değerlendirerek bize kelimeler arasında bir anlam(context) bulabilir.
-Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve bunların outputları yapay sinir ağına gidiyor.
+Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve attention outputları bir FFNN(feed forward neural network, klasik sinir ağı yapısı) yapısına gidiyor.
 Böylece daha hızlı ve efektif bir şekilde modelleri eğitebiliyoruz.
 
 ![](/images/transformer-arch.png "Makaledeki Transformer Yapısı")
@@ -71,7 +71,7 @@ NLP dünyasındaki gelişmelerin önünü açan bir başka önemli makale ise [U
 
 {% include info.html text="Transfer learning: Başka veriler üzerinde eğitilen modelin(genellikle büyük veri setleri üzerinde eğitilen büyük modeller olurlar) eğitildiği veriye benzer başka veriler üzerinde tekrardan hiç değiştirilmeden veya kendi amacımız için biraz eğitilerek(buna fine-tuning denir genellikle sinir ağındaki son katmanın gerisindeki katmanlardaki ağırlıklara dokunmayarak son katmandaki ağırlıklar açılır ve model tekrardan eğitilir veya son katmandan sonra başka bir katman koyulur ve model tekrar eğitilir.) kullanılması." %}
 
-![](/images/transformer-arch.png "ULMFiT Yaklaşımı")
+![](/images/ulmfit-yaklasimi.png "ULMFiT Yaklaşımı")
 
 Bu yaklaşım üç ana başlığa ayrılır.
 
