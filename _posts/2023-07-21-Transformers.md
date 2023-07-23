@@ -27,7 +27,7 @@ Bunu yapay sinir ağı içerisinde kendini tekrarlayan bir katman oluşturarak s
 Bu katman aslında yapay sinir ağlarında input ile output katmanlarının arasında bulunan "gizli" dediğimiz katmanlara benzer. Tek farkı aynı zamanda bu katmanın bir sonraki RNN katmanı için input olmasıdır.
 RNN'ler ismindende anlayabileceğimiz üzere(recurrent yani tekrarlayan) aslında katmanlarından biri kendini tekrar eden yapay sinir ağlarıdır.
 
-![](/images/RNNvsNN.png "RNN vs Klasik Sinir Ağı Karşılaştırması")
+![](/images/transformer-blog/RNNvsNN.png "RNN vs Klasik Sinir Ağı Karşılaştırması")
 
 RNN yapısının "vanishing gradient"(bkz: [Vanishing gradient problem](https://en.wikipedia.org/wiki/Vanishing_gradient_problem)) problemi vardır bu problem uzun paragraflardaki kelimeler arası ilişkileri anlamada sıkıntı çıkarır ayrıca çok hafıza kullandıklarından yavaş eğitilirler.
 
@@ -46,7 +46,7 @@ Encoder-Decoder:
 
 Encoder, girdi verilerini(örneğin bir metni) sayılarla temsil edeceği bir "last hidden state"e gönderir. Bu state daha sonrasında decoder içine girer ve bize çıktımızı verir.
 
-![](/images/encoder-decoder-basit-ornek.PNG "Basit bir TR-EN çevirisi, encoder-decoder örneği")
+![](/images/transformer-blog/encoder-decoder-basit-ornek.PNG "Basit bir TR-EN çevirisi, encoder-decoder örneği")
 
 Bu yapı oldukça basit ve sade olsada eksikliği vardır. 
 Encoder kendi içinde birden fazla RNN katmanıyla girdi sözcüklerini birbirleriyle anlamdırabilse bile Decoder yapısına bir state halinde bilgileri ulaştırması gerekir buda bilgi kaybına yol açar.
@@ -58,13 +58,13 @@ Encoder-Decoder yapısının ana eksikliğinin bilgi kaybı olduğundan bahsetmi
 Decoder'a tek bir input vermek yerine, Encoder'un her bir outputunu input olarak vermek güzel bir çözüm gibi duruyor.
 Attention yapısı ise bu inputlardan hangisinin daha öncelikli olduğunu belirleyen ağırlıklar koyar ve Decoderda bu ağırlıklara göre outputunu oluşturur.
 
-![](/images/attention-mekanizmasi.PNG "Attention Mekanizması")
+![](/images/transformer-blog/attention-mekanizmasi.PNG "Attention Mekanizması")
 
 Attention mekanizması her bir adımda(Decoderun oluşturacağı her yeni kelimede) hangi input ağırlıklarının daha önemli olduğunu değerlendirerek bize kelimeler arasında bir anlam(context) sağlar.
 Bu yapının daha paralel bir şekilde gidebilmesi için Transformer makalesinde ise self-attention tanıtılıyor. Orijinal transformer yapısında encoder ve decoderların kendi attention mekanizmaları var ve attention outputları bir FFNN(feed forward neural network, klasik sinir ağı yapısı) yapısına gidiyor.
 Böylece daha hızlı ve efektif bir şekilde modelleri eğitebiliyoruz.
 
-![](/images/transformer-arch.png "Makaledeki Transformer Yapısı")
+![](/images/transformer-blog/transformer-arch.png "Makaledeki Transformer Yapısı")
 
 Transformer yapısının tam hali yukarıdaki resimde. Şu ana kadar konuştuklarımızın yanı sıra bu yapıda her katmanda bir "residual connection" ve normalization katmanları da var(resimdeki add & norm katmanları). Residual connectionlar(artık bağlantı) bir katmanın girdilerini oluşturduğu çıktılarada ekleyerek kendisinden sonraki katmana hem girdilerini hem de çıktılarını vererek ilerlemesini sağlıyor. Bu yapı ilk defa görüntü işleme algoritması olan ResNet'lerde karşımıza çıkıyor ve transformerlarda dahil birçok yerde kullanılıyor. Bu artık bağlantılar RNN'lerinde bir problemi olan vanishing gradient problemini çözer, modeli daha kolay eğitebilmemizi sağlar ve modelin performansını artırır. Birde normalization katmanlarını görüyoruz bu katman ise verinin çıktılarını normalize ederek daha stabil bir model eğitme süreci sağlar ayrıca overfitting gibi sorunların önüne geçer.
 
@@ -74,7 +74,7 @@ NLP dünyasındaki gelişmelerin önünü açan bir başka önemli makale ise [U
 
 {% include info.html text="Transfer learning: Başka veriler üzerinde eğitilen modelin(genellikle büyük veri setleri üzerinde eğitilen büyük modeller olurlar) eğitildiği veriye benzer başka veriler üzerinde tekrardan hiç değiştirilmeden veya kendi amacımız için biraz eğitilerek(buna fine-tuning denir genellikle sinir ağındaki son katmanın gerisindeki katmanlardaki ağırlıklara dokunmayarak son katmandaki ağırlıklar açılır ve model tekrardan eğitilir veya son katmandan sonra başka bir katman koyulur ve model tekrar eğitilir.) kullanılması." %}
 
-![](/images/ulmfit-yaklasimi.png "ULMFiT Yaklaşımı")
+![](/images/transformer-blog/ulmfit-yaklasimi.png "ULMFiT Yaklaşımı")
 
 Bu yaklaşım üç ana başlığa ayrılır.
 
