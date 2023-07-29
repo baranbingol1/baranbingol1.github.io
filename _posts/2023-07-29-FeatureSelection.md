@@ -26,6 +26,6 @@ Merhaba, bu yazıda makine öğrenmesi modelleri için özellik seçimi yapmayı
 ## Feature Selection Örneği
 
 Feature Selection'ın birkaç uygulamasını görmek için kaggle da oluşturduğum notebooka göz atabilirsiniz.
-https://www.kaggle.com/code/baranbingl/feature-selection-nedir-nas-l-yap-l-r/
+[Feature Selection Nedir, Nasıl Yapılır ?](https://www.kaggle.com/code/baranbingl/feature-selection-nedir-nas-l-yap-l-r/)
 
 "Talk is cheap. Show me the code." - Linus Torvalds
