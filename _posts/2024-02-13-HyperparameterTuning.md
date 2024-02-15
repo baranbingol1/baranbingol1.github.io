@@ -5,10 +5,6 @@ Merhabalar, yeni blog yazıma hoşgeldiniz. Bugün hiperparametre optimizasyonu 
 1. Başlamadan önce bu yazıda üstünden geçeceklerimizi özetlemek gerekirse:
 {:toc}
 
-1. Hiperparametre vs parametre aralarındaki fark nedir ?
-2. Hiperparametre optimizasyonu yöntemleri
-3. Veri seti üzerinde örnek bir uygulama
-
 ## Hiperparametre vs parametre aralarındaki fark nedir ?
 
 Aradaki farkı öğrenmek için iki farklı regresyon modelini inceleyelim.
