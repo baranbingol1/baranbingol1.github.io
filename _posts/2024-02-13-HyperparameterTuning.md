@@ -2,9 +2,12 @@
 
 Merhabalar, yeni blog yazıma hoşgeldiniz. Bugün hiperparametre optimizasyonu üzerine konuşacağız, umarım okuyanlara faydalı bir yazı olur!
 
-Başlamadan önce bu yazıda üstünden geçeceklerimizi özetlemek gerekirse:
-
+1. Başlamadan önce bu yazıda üstünden geçeceklerimizi özetlemek gerekirse:
 {:toc}
+
+1. Hiperparametre vs parametre aralarındaki fark nedir ?
+2. Hiperparametre optimizasyonu yöntemleri
+3. Veri seti üzerinde örnek bir uygulama
 
 ## Hiperparametre vs parametre aralarındaki fark nedir ?
 
@@ -28,6 +31,34 @@ bu loss function da başındaki En Küçük Kareler dışında $$\color{red}\lam
 
 ## Hiperparametre optimizasyonu yöntemleri
 
-Öncelikle üstünde durmamız gereken bir konu....
+Bu blog yazısında 3 farklı hiperparametre optimizasyon yönteminden bahsedeceğiz.
 
-![](/images/hyperparameter-blog/grid_search_cross_validation.png "Cross validation")
+1. Grid Search
+2. Random Search
+3. Bayesian Optimization
+   
+### Grid Search
+
+Hiperparametrelerin belirli bir değer aralığında tüm kombinasyonlarının denenerek en iyi kombinasyonun bulunmasını sağlayan bir yöntemdir. Bu yöntem, kapsamlıdır ancak zaman alıcıdır.
+
+### Random Serch
+
+Hiperparametrelerin belirli bir değer aralığında tüm kombinasyonlarının denenmesi yerine verilen sayı kadar rastgele kombinasyonları değerlendirir ve en iyisini seçer. Bu yöntem daha az kapsamlıdır ancak modelin fazla hiperparametresi varsa grid searchten çok daha hızlıdır.
+
+### Grid Search vs Random Serch
+
+Örneğin bir Decision Tree(Karar Ağacı) algoritmasının 4 tane hiperparametresini optimize etmek istiyoruz ve aşağıdaki belirli değerlerin iyi olabileceğini düşünüyoruz.
+
+'n_estimators': [100, 200, 300, 400]\
+'max_depth': [None, 5, 10, 15, 20]\
+'min_samples_split': [2, 5, 10]\
+'min_samples_leaf': [1, 2, 4]
+
+Bu değerler üzerine Grid Search yaparsak Grid Search'ün deneyeceği 4x5x3x3'ten toplam 180 tane kombinasyon vardır ve eklenen her bir hiperparametre değeri başına bu sayının çok daha fazla büyüyeceğini göz önüne alalım. Tüm kombinasyonları denemek yerine Random Search ile örneğin 25 tane kombinasyonu deneyebiliriz. Bu sayede zamandan ve hesaplama gücünden kazanırız ancak en iyi hiperparametre kombinasyonunu yakalayamayabiliriz. 
+
+### Bayesian Optimization (Bayes optimizasyonu)
+
+
+## Veri seti üzerinde örnek bir uygulama
+
+![](/images/hyperparameter-blog/grid_search_cross_validation.png "Cross validation şeması")
