@@ -4,10 +4,7 @@ Merhabalar, yeni blog yazıma hoşgeldiniz. Bugün hiperparametre optimizasyonu 
 
 Başlamadan önce bu yazıda üstünden geçeceklerimizi özetlemek gerekirse:
 
-- Hiperparametre vs parametre aralarındaki fark nedir ? 
-- Hiperparametre optimizasyonu yöntemleri
-- Hiperparametre optimizasyonu için popüler kütüphaneler (Python)
-- Verisetinde örnek bir uygulama 
+{:toc}
 
 ## Hiperparametre vs parametre aralarındaki fark nedir ?
 
@@ -30,3 +27,7 @@ $$L = \sum_{i=1}^n(y_i - \hat{y}_i)^2 + \lambda \sum_{j=1}^p(W_j)^2$$
 bu loss function da başındaki En Küçük Kareler dışında $$\color{red}\lambda \sum_{j=1}^{p} (W_j)^2$$ terimi bulunur buna L2 cezası denir ve modeldeki tüm katsayıların(örneğin basit doğrusal regresyonda $\beta_1$ bir katsayıydı) toplamının lambda değeri ile çarpılmasıdır. Burada lambda bizim kontrol ettiğimiz bir hiperparametredir ve modelin nasıl öğreneceğini belirler.
 
 ## Hiperparametre optimizasyonu yöntemleri
+
+Öncelikle üstünde durmamız gereken bir konu....
+
+![](/images/hyperparameter-blog/grid_search_cross_validation.png "Cross validation")
