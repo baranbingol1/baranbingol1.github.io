@@ -71,7 +71,7 @@ Cross validation, modelin overfitting yapma olasılığını azaltır ve hiperpa
 
 {% include info.html text="Cross validation yapmak yerine veri seti train, validation ve test diye ayırılıp. En iyi hiperparametre araması yapılırken hiperparametreler validation kümesine göre seçilebilir. Buda uygulanabilir bir yoldur ancak veri sayımız azsa cross validation yapmak daha iyi olacaktır." %}
 
-Artık kodlamaya geçelim.
+Artık kodlamaya geçelim. (Kodların olduğu notebooka [buradan](https://colab.research.google.com/drive/1-cv8As1c8IaZurSjlwcTBpZCdeE2wTsp?usp=sharing) ulaşılabilir)
 
 
 Öncelikle gerekli importları yapalım ve veri setimizi yükleyelim.
