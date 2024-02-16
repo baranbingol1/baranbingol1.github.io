@@ -39,7 +39,7 @@ Hiperparametrelerin belirli bir değer aralığında tüm kombinasyonlarının d
 
 ### Random Serch
 
-Hiperparametrelerin belirli bir değer aralığında tüm kombinasyonlarının denenmesi yerine verilen sayı kadar rastgele kombinasyonları değerlendirir ve en iyisini seçer. Bu yöntem daha az kapsamlıdır ancak modelin fazla hiperparametresi varsa grid searchten çok daha hızlıdır.
+Hiperparametrelerin belirli bir değer aralığında tüm kombinasyonlarının denenmesi yerine verilen sayı kadar rastgele kombinasyonları değerlendirir ve en iyisini seçer. Bu yöntem daha az kapsamlıdır ancak modelin fazla hiperparametresi veya hiperparametrelerin alabileceği değer aralığı fazlaysa grid searchten çok daha hızlıdır.
 
 ### Grid Search vs Random Serch
 
@@ -54,6 +54,7 @@ Bu değerler üzerine Grid Search yaparsak Grid Search'ün deneyeceği 4x5x3x3't
 
 ### Bayesian Optimization (Bayes optimizasyonu)
 
+Bayes optimizasyonu tanım olarak **kara kutu fonksiyonların global optimizasyonu** için kullanılan bir yöntemdir yani verilen fonksiyonun iç yapısı hakkında bilgi sahibi olmadan yalnızca giriş-çıkış ilişkisine dayanarak en iyi sonucu bulmaya çalışır. Örneğin makine öğrenmesiyle sınıflandırma yapıyoruz diyelim, girdilerimiz hiperparametreler ve çıktılarımız modelin sonuçlarını değerlendiren "accuracy" olsun. Bayes optimizasyonu, bu hiperparametre kombinasyonlarını kullanarak modelin performansını değerlendirir ve daha sonra bu performansı eniyilemek(accuracy'i arttırmak için) için yeni hiperparametre kombinasyonları önerir bu öneriler Grid Search ve Random Searchten farklı olarak önceki denemelerden elde edilen sonuçlara dayanır. Yani bayes optimizasyonu her bir denemeden sonra hiperparametre değerlerinin performansını modelleyen bir olasılık dağılımı oluşturur ve bu dağılımı kullanarak en iyi olabilecek hiperparametre değerlerini belirler ve bunları kullanarak devam eder. Bu yöntemin avantajı daha az denemeyle daha başarılı sonuçlar ortaya çıkarabilmesidir ancak dezavantajı da önceki denemelere bakıp kendisine yön verdiğinden dolayı en başta verdiğimiz hiperparametre değerlerinin ve aralığının sağlam olması gerekir.
 
 ## Veri seti üzerinde örnek bir uygulama
 
