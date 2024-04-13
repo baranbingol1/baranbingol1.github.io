@@ -258,12 +258,17 @@ import numpy as np
 from scipy.stats import ttest_ind
 
 rng = np.random.default_rng(42)
-group_a_heights = rng.normal(loc=170, scale=5, size=100) # boy ortalaması 170 olan bir örneklem grubu (A anakütlesinin)
-group_b_heights = rng.normal(loc=171, scale=5, size=100) # boy ortalaması 171 olan diğer bir örneklem grubu (B anakütlesinin)
 
-t_statistic, p_value = ttest_ind(group_a_heights, group_b_heights) # varyansı aynı olan bağımsız iki popülasyon arasında t-testi
+# boy ortalaması 170 olan bir örneklem grubu (A anakütlesinin)
+group_a_heights = rng.normal(loc=170, scale=5, size=100)
+# boy ortalaması 171 olan diğer bir örneklem grubu (B anakütlesinin)
+group_b_heights = rng.normal(loc=171, scale=5, size=100)
 
-alpha = 0.05 # genellikle 0.01 veya 0.05 seçilir
+# varyansı aynı olan bağımsız iki popülasyon arasında t-testi
+t_statistic, p_value = ttest_ind(group_a_heights, group_b_heights)
+
+# p-degeri ile karşılaştıracağımız alpha değeri. Genellikle 0.01 veya 0.05 seçilir
+alpha = 0.05 
 
 print("T-Statistic:", t_statistic)
 print("P-Value:", p_value)
@@ -272,6 +277,7 @@ if p_value < alpha: print("Reject the null hypothesis. There is a significant di
 else: print("Fail to reject the null hypothesis. There is no significant difference in average height between Group A and Group B.")
 ```
 
-   T-Statistic: -1.9169951303944577
-   P-Value: 0.05667816873538445
-   Fail to reject the null hypothesis. There is no significant difference in average height between Group A and Group B.
+    T-Statistic: -1.9169951303944577
+    P-Value: 0.05667816873538445
+    Fail to reject the null hypothesis. There is no significant difference in average height between Group A and Group B.
+   
