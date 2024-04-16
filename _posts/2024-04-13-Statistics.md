@@ -195,7 +195,7 @@ Belirli bir deneme sayısında ardışık Bernoulli denemelerinin sayısını mo
 
 **Normal(Gaussian) Dağılım:** 
 
-Doğal olaylarda ve ölçümlerinde(dolayısıyla veri setlerinde) sıklıkla gözlemlenen, simetrik ve çan şeklinde bir dağılım modelidir. Ortalama ve standart sapma ile tanımlanır. Daha detaylı bir şekilde üstünde duracağız çünkü önemli ve sık karşılaşılan bir dağılımdır.
+Doğal olaylarda ve ölçümlerinde(dolayısıyla veri setlerinde) sıklıkla gözlemlenen, simetrik ve çan şeklinde bir dağılım modelidir. Ortalama ve standart sapma ile tanımlanır.
 
 **Exponential(Üstel) Dağılım:** 
 
