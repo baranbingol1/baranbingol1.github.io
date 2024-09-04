@@ -1,0 +1,255 @@
+# Dil Modelleriyle Doküman-Soru Cevap Yapma
+
+Merhabalar, bu blog yazımda nasıl büyük bir dil modelini kendi dokümanlarınızı analiz ettirebilmek için kullanabileceğinizi göstereceğim.
+ChatGPT, Claude gibi bazı yapay zeka modelleri hali hazırda doküman yükleme desteği sağlasa da bu hizmetlerde ihtiyacımıza göre özelleştirme yapmak zor. Ayrıca tam analizin önemli bir yerinde kullanım limiti bittiğinde başımız ağrıyabilir.
+
+Bloğun içeriği : 
+
+{:toc}
+
+## Retrieval-Augmented Generation (RAG) nedir ve neden ihtiyacımız var?
+
+Büyük dil modellerinin kendi başına sahip olduğu bilgiler aslında "parametrelerinden" geliyor yani eğitildiği veriden geliyor. Peki biz bu modeli eğitilmediği bir veri üzerinde nasıl kullanabiliriz ? Bu soruya cevap olarak basitçe istediğimiz veriyi de girdi olarak modele verebiliriz diyebilirsiniz. Bu kısa bir metin için mantıklı bir çözüm olsa da metnin boyutu uzadıkça hem kullanım maliyetinin arttığını hem de context lengthe (transformer modellerin teknik sebeplerden dolayı maksimum girdi uzunluğu) daha da yaklaştığımızı unutmamamız gerekiyor. Ayrıca şunu da unutmamak gerekir ki dil modellerinin "konuşma hafızası" diye bir şeyi yoktur. ChatGPT gibi platformlarda modelin bir nevi bir hafızasının olması için aynı konuşmada önceden yazdıklarınızı da modele girdi olarak verirler. Bu da ortalama bir metnin analizi için bile kullanım limitine çok çabuk ulaşacağınızı söylüyor. İşte bu noktada çözüm olarak devreye [Retrieval-Augmented Generation](https://arxiv.org/pdf/2005.11401) giriyor. RAG yöntemi kısaca şunu söylüyor :
+
+1. Dokümanlarını veya diğer metinlerini böl ve embedle.
+2. Bu embeddingleri modelin bilgi kaynağı olacak vector store'a at.
+3. Model, sorulan soruyla alakalı kısımları bu bilgi kaynağından "similarity search" yaparak kullanabilsin.
+
+Bu açıklamada iki jargon kelimemiz var *embeddingler* ve *similarity search* peki bunlar nedir ?
+
+### Embeddingler ve Similarity Search
+
+Embeddingler, bir kelimeyi veya cümleyi sayısal bir vektöre dönüştürme işlemidir. Similarity search ise bu vektörler içinde birbirine yakın olan vektörleri bulma işlemidir.
+Embedding işlemi için [sentence-transformers](https://sbert.net/) kütüphanesinden open-source bir embedding modeli seçebilir veya [OpenAI Embeddinglerini](https://platform.openai.com/docs/guides/embeddings) kullanabiliriz.
+
+Aşağıda RAG yönteminin genel bir şeması verilmiştir.
+
+![](/images/rag-blog/rag.png "RAG Şeması")
+
+Kullanıcımız sorgusunu girer dil modeli bu sorguyu cevaplayabilmek için bilgi kaynağına bir sorgu oluşturur ve embedler. Sonra bilgi kaynağındaki vektörler arasında sorgu embeddingimizle similarity search yapılır. En alakalı k-tane vektörün metin hali ise geri modele verilir. Örnek olarak şöyle bir işlem gerçekleşmiş olabilir: Kullanıcı sorgu olarak "Fatih Sultan Mehmet'in oğlu kimdir?" diye sormuştur. Buna cevap verebilmek için modelimiz bilgi kaynağına şöyle bir sorguda bulunmuş olabilir "Fatih Sultan Mehmetin oğulları" bu sorgu bilgi kaynağını oluştururken kullandığımız embedding modeliyle embedlenir ve bilgi kaynağımızda bu sorguya benzer vektörlerin metinleri similarity search ile modele girdi olarak geri döndürülür. Model ise en son bu aldığı bilgiyle beraber çıktıyı oluşturur. Böylece tüm bir dokümanı girdi olarak modele vermektense en alakalı kısımları vermiş oluyoruz. Takdir edersiniz ki modelin oluşturacağı sorgu burada alakalı metinlerin similarity search ile gelmesi açısından çok önemlidir. RAG'ın bir dezavantajı olarak bu sorgunun çok önemli olması söylenebilir.
+
+## Similarity Search yöntemleri
+
+Similarity search yöntemleri simetrik ve simetrik olmayan şeklinde ikiye ayrılır. 
+
+### Simetrik arama
+
+Simetrik aramada sorgunuzun aradığınız metinle aynı kelimeleri içermesini ve aynı uzunlukta olmasını diliyorsunuz. Örneğin "Fatih Sultan Mehmet'in oğulları" diye bir aramaya yakın bir cümle "Fatih Sultan Mehmet'in çocukları" veya "Fatih Sultan Mehmet'in kızları" şeklinde olabilir. Örneğin bir müşteri destek forumunda bunu kullanarak birbirinin neredeyse kopyası olan soruları filtreleyebiliriz ve kullanıcıya sorduğu soruya benzer sorunun cevabını verebiliriz.
+
+### Asimetrik arama (veya semantic similarity search)
+
+Asimetrik arama da ise kısa bir sorgu verip onun açıklamasını istiyorsunuz. Örneğin "Ofsayt nedir?" sorgusuna cevap olarak "ayaktopunda, top bir kale yönünde hareket halindeyken, o kaleye akın yapan takımın oyuncularından birinin..." cevabını alabilirsiniz. Çoğunlukla dil modelleriyle beraber kullanmak istediğimiz arama çeşidi budur ve embedding modelleri bu semantik ilişkileri iyi yakalayabilmektedir.
+
+## İki embedding vektörünün benzerlik karşılaştırması
+
+İki cümlemiz var ve bunları embedleyip iki tane 1xn boyutlu vektör elde ettik diyelim. Bunları nasıl kıyaslayabiliriz ? Bu konuda birkaç tane metrik var bunları isterseniz görelim.
+
+### Kosinüs Benzerliği
+
+Kosinüs benzerliği, iki vektör arasındaki açının kosinüsünü hesaplayarak bu vektörlerin ne kadar benzer olduğunu belirliyor. Değer aralığı -1 ile 1 arasında olur. 1'e yakın olması benzer olduklarını -1'e yakın olması da benzer olmadıklarını gösteriyor.
+Formülü aşağıdaki gibidir : 
+
+$${cosine\_similarity}(A, B) = \frac{A \cdot B}{\|A\| \|B\|}$$
+
+### Öklid Uzaklığı
+
+L2 norm olarakta bilinir ve iki vektör arasındaki "düz" uzaklığı hesaplar. Dolayısıyla bu metrikte daha düşük bir değer daha büyük bir benzerliği gösteriyor.
+Formülü aşağıdaki gibidir :
+
+$${euclidean\_distance}(A, B) = \sqrt{\sum_{i=1}^n (A_i - B_i)^2}$$
+
+### Dot Product (iç çarpım)
+
+İki vektörün iç çarpımını hesaplayarak, bu vektörlerin aynı doğrultuda olup olmadığını ölçer. Yüksek bir değer daha benzer olduklarını gösteriyor.
+Formülü aşağıdaki gibidir :
+
+$${dot\_product}(A, B) = \sum_{i=1}^n A_i \cdot B_i$$
+
+## LangChain RAG uygulaması
+
+Tipik olarak RAG uygulamalarının iki aşaması vardır.
+
+1. İndexleme : Dokümanımızı embedleyip vector store'a atma işlemi. Yani bilgi kaynağımızı oluşturma işlemi.
+2. Alma ve oluşturma : Buda bilgi kaynağımızı yaptıktan sonra asıl önemli kısım. Modelimizin gerektiği bilgiyi alıp kullanmasını sağlayan kısım.
+
+Bu aşamaları yaparken [https://python.langchain.com/](https://python.langchain.com/) kütüphanesi işimizi sağladığı abstractionlarla oldukça kolaylaştırıyor. LangChain dışında da oldukça işe yarar aynı işlevi gören alternatif kütüphaneler var en popülerleri [Haystack](https://docs.haystack.deepset.ai/docs/intro) ve [LlamaIndex](https://docs.llamaindex.ai/en/stable/). Bu kütüphanelere de bakmanızı tavsiye ediyorum belki sağladığı fonksiyonlar, classlar vs. daha da hoşunuza gidebilir. Ben LangChain'e aşina olduğum için ve aynı zamanda en popüler kütüphane olduğu için LangChain kullanacağım.
+
+Şimdi hazırsanız kod kısmına geçelim.
+
+Öncelikle OpenAI key'imizi giriyoruz ve modelimizi seçiyoruz.
+
+```python
+import getpass
+import os
+from langchain_openai import ChatOpenAI
+
+os.environ["OPENAI_API_KEY"] = getpass.getpass()
+
+llm = ChatOpenAI(model="gpt-4o-mini")
+```
+
+Şimdi ise dokümanımızı python değişkeni olarak alabilecek bir fonksiyon yazmamız gerekiyor.
+
+```python
+from langchain.document_loaders import PyPDFLoader
+from langchain.document_loaders import Docx2txtLoader
+from langchain.document_loaders import TextLoader
+
+def load_document(file):
+    """
+    Verilen dosya yolundaki dokümanı değişken olarak geri döndürür.
+    """
+    name, ext = os.path.splitext(file)
+
+    if ext == '.pdf':
+        loader = PyPDFLoader(file)
+        return loader.load()
+    elif ext == '.docx':
+        loader = Docx2txtLoader(file)
+        return loader.load()
+    elif ext == '.txt':
+        loader = TextLoader(file, encoding='utf-8')
+        return loader.load()
+    else:
+        raise ValueError('Yuklenen dokuman PDF, DOCX veya TXT uzantili olmalidir.')
+```
+
+Burada doküman olarak TCK'nın belirli bir kısmını koymak istedim.
+Fonksiyonumuzu kullanıp yüklediğimiz dosyanın ilk birkaç kelimesine bakalım
+```python
+docs = load_document('tck_bolum1.txt')
+print(docs[0].page_content[:500])
+```
+    
+    Ceza Kanununun amacı
+
+    MADDE 1. - (1) Ceza Kanununun amacı; kişi hak ve özgürlüklerini, kamu düzen ve güvenliğini, hukuk devletini, kamu sağlığını ve çevreyi, toplum barışını korumak, suç işlenmesini önlemektir. Kanunda, bu amacın gerçekleştirilmesi için ceza sorumluluğunun temel esasları ile suçlar, ceza ve güvenlik tedbirlerinin türleri düzenlenmiştir.
+    
+    Suçta ve cezada kanunîlik ilkesi
+    
+    MADDE 2. - (1) Kanunun açıkça suç saymadığı bir fiil için kimseye ceza verilemez ve güvenlik tedbiri uygulana
+
+Bilgi kaynağı olarak vector storeları kullanacağımızı söylemiştik burada vectorstore tercihi olarak birkaç opsiyon var. Bu uygulamada open-source ve local olarak kullanılabilen [ChromaDB](https://www.trychroma.com/)'yi tercih ediyoruz ancak [Pinecone](https://www.pinecone.io/) gibi bulut depolama hizmeti veren vectorstorelarda var. Embedding modeli olarakta bir OpenAI embeddingi tercih ediyoruz yine başka seçenekler var desteklenen modellere [buradan](https://python.langchain.com/v0.2/docs/integrations/text_embedding/) bakabilirsiniz.
+
+```python
+from langchain_chroma import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=256)
+splits = text_splitter.split_documents(docs)
+vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings(model='text-embedding-3-small'))
+
+retriever = vectorstore.as_retriever()
+```
+
+Şimdi ise uygulamada önemli yerlerden birine geldik. Amacımız "hafızası" olan bir yapay zekayla doküman soru-cevabı yapmaktı. Bunu yapabilmek için ise her seferinde hatırlaması gereken yerleri tekrardan modele girmemiz gerekiyor çünkü bahsettiğimiz üzere modellerin bir "sohbet hafızası" yok. Bunun için ise kabaca şöyle bir LangChain zinciri oluşturuyoruz.
+
+Kullanıcı inputu -> sohbet bağlamı sağlayan model -> soru-cevap yapan model -> çıktı
+
+O yüzden şimdi bağlam sağlayan bir model oluşturmamız gerekiyor. Aşağıdaki kod bunu sağlıyor.
+
+```python
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.chains import create_retrieval_chain, create_history_aware_retriever
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
+contextualize_q_system_prompt = """Sana verilen bir sohbet geçmişi ve en son kullanıcının sorusuna dayanarak, 
+sohbet geçmişi olmadan da anlaşılabilecek bağımsız bir soru oluştur. 
+Soru CEVAPLAMA, sadece gerekirse yeniden biçimlendir, aksi takdirde olduğu gibi geri döndür.
+"""
+contextualize_q_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", contextualize_q_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ]
+)
+history_aware_retriever = create_history_aware_retriever(
+    llm, retriever, contextualize_q_prompt
+)
+```
+
+Şimdi ise verilen sohbet bağlamına ve soruya göre dokümandan bilgi alarak soruyu cevaplayacak modeli oluşturuyoruz.
+
+```python
+system_prompt = """Sen sana verilen bilgiye göre soruları cevaplayan yardımsever bir yapay zekasın.
+Aşağıdaki bilgileri kullanarak verilen soruyu cevapla. Eğer cevabı bilmiyorsan bilmediğini söyle.
+Verdiğin cevabı kısa ve öz tut ayrıca cevap için maksimum 5 cümle kullan.
+
+###########
+{context}
+###########
+"""
+
+qa_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
+)
+
+question_answer_chain = create_stuff_documents_chain(llm, system_prompt)
+rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+```
+
+Şimdi ise konuşmaları depolayacak bir değişken oluşturuyoruz.
+
+```python
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
+
+store = {}
+
+# session id var ise storedan onu döndür yok ise oluştur.
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+# ve sonunda zincirimizi oluşturuyoruz
+conversational_rag_chain = RunnableWithMessageHistory(
+    rag_chain,
+    get_session_history,
+    input_messages_key="input",
+    history_messages_key="chat_history",
+    output_messages_key="answer",
+)
+```
+
+Modeli istediğimiz kadar kullanmak için aşağıdaki gibi bir kod yazabiliriz
+
+```python
+session_id = "abc123"
+
+while True:
+    user_input = input("Bir soru yazın (Çıkmak için 'q' yazın): ")
+    
+    if user_input.lower() == 'q':
+        print("Çıkılıyor...")
+        break
+        
+    result = conversational_rag_chain.invoke(
+        {"input": user_input},
+        config={"configurable": {"session_id": session_id}}
+    )["answer"]
+    
+    print(f"Cevap: {result}\n")
+```
+
+    
+    Bir soru yazın (Çıkmak için 'q' yazın):  Bu doküman ne hakkındadır ?
+    Cevap: Bu doküman, ceza hukuku kapsamında güvenlik tedbirleri ve suçların tanımlarıyla ilgili düzenlemeleri içermektedir. Patlayıcı maddeler, kesici aletler, kimyasal ve biyolojik maddeler gibi tehlikeli unsurların tanımları yapılmakta ve bunların suç kapsamındaki etkileri açıklanmaktadır. Ayrıca, hapis cezası sonucu kişilerin belirli haklardan mahrum bırakılması, adlî para cezaları ve ceza sorumluluğunu kaldıran nedenler üzerinde durulmaktadır. Genel olarak, suç ve ceza ilişkisini düzenleyen hukuki çerçeve sunulmaktadır.
+    
+    Bir soru yazın (Çıkmak için 'q' yazın):  Yabancılar suç işleyince ceza nasıl uygulanmaktadır ?
+    Cevap: Yabancıların suç işlemesi durumunda, Türk kanunları uygulanabilir. Eğer suç, Türk kanunlarına göre en az bir yıl hapis cezasını gerektiriyorsa ve fail Türkiye'de bulunuyorsa, Adalet Bakanının istemiyle yargılama yapılır. Ayrıca, suçun Türk vatandaşına veya Türk kanunlarına göre kurulmuş bir tüzel kişiye zarar vermesi durumunda, suçtan zarar görenin şikâyeti üzerine de yargılama yapılabilir. Ancak, suçun geri verilmesi anlaşması yoksa ve failin Türkiye'de bulunması şartıyla yargılama yapılabilir. Cezalar, suçun işlendiği ülkenin kanunlarına göre belirlenen üst sınırı aşamaz.
+    
+    Bir soru yazın (Çıkmak için 'q' yazın):  Bazı hapis cezası gerektiren suçlar nelerdir?
+    Cevap: Hapis cezası gerektiren bazı suçlar arasında kasten öldürme, kasten yaralama, yağma, dolandırıcılık, uyuşturucu veya uyarıcı madde imal ve ticareti ile parada veya kıymetli damgada sahtecilik bulunmaktadır. Bu suçlar, ciddi suçlar kategorisindedir ve kanunda belirlenen hapis cezalarına tabidir.
+    
+    Bir soru yazın (Çıkmak için 'q' yazın):  q
+    Çıkılıyor...
+
+
+Evet böylece bugünkü blogumuzun sonuna geldik. Bir şeyler katabildiysem ne mutlu bana. Vaktinizi ayırıp okuduğunuz için teşekkür ediyorum.
