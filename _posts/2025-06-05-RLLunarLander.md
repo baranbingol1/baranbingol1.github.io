@@ -193,7 +193,7 @@ Bu üç algoritma modern RL'nin temellerini oluşturuyor:
 - **PPO**: Kararlı ve güvenilir, çoğu problem için go-to seçim
 - **TD3**: Sürekli kontrol problemlerinde üstün performans
 
-Kodların tamamına [GitHub repo linki] üzerinden ulaşabilirsiniz.
+Kodların tamamına [GitHub repo linki](https://github.com/baranbingol1/yzm304_odev4) üzerinden ulaşabilirsiniz.
 
 ### Kaynaklar
 - [A2C Makalesi](https://arxiv.org/abs/1602.01783)
