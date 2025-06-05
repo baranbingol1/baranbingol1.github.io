@@ -183,7 +183,7 @@ for _ in range(1000):
 
 PPO modelini alıp yeterince uzun süre eğitirseniz (mean_reward = 200 olana kadar) aşağıdaki gibi bir davranışı olacaktır :
 
-![PPO LunarLander performansı GIF](/images/rl-lunarlander-blog/ppo-lunarlander.gif "Kaynak: https://www.researchgate.net/figure/Architecture-of-Twin-delayed-DDPG-TD3_fig5_360567032")
+![PPO LunarLander performansı GIF](/images/rl-lunarlander-blog/ppo-lunarlander.gif)
 
 ## Sonuç
 
