@@ -1,0 +1,12 @@
+{%- comment -%}
+  Renders a date in Turkish, e.g. "18 Haziran 2025".
+
+  Jekyll's `date` filter has no locale support, so the month name is looked up
+  from an array. "%m" gives a zero-padded string ("06"); `plus: 0` coerces it
+  to an integer so it can index the array.
+
+  Usage: {% include date-tr.html date=page.date %}
+{%- endcomment -%}
+{%- assign aylar = "Ocak,Şubat,Mart,Nisan,Mayıs,Haziran,Temmuz,Ağustos,Eylül,Ekim,Kasım,Aralık" | split: "," -%}
+{%- assign ay_index = include.date | date: "%m" | plus: 0 | minus: 1 -%}
+{{- include.date | date: "%d" | plus: 0 }} {{ aylar[ay_index] }} {{ include.date | date: "%Y" -}}

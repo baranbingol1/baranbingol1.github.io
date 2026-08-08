@@ -407,6 +407,119 @@ blockquote {
   color: var(--text-muted);
 }
 
+.post-meta-sep {
+  margin: 0 0.45em;
+  opacity: 0.55;
+}
+
+// ------------------------- prev / next nav ---------------------------------
+
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.post-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    text-decoration: none;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+
+    .post-nav-title { color: var(--accent); }
+  }
+}
+
+.post-nav-next {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.post-nav-empty {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.post-nav-label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.post-nav-title {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+@media screen and (max-width: 600px) {
+  .post-nav { grid-template-columns: 1fr; }
+  .post-nav-next { text-align: left; align-items: flex-start; }
+  .post-nav-empty { display: none; }
+}
+
+// ------------------------- copy code button --------------------------------
+
+.highlighter-rouge { position: relative; }
+
+.copy-code {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  // Hidden until the block is hovered or the button is focused, so it never
+  // sits on top of the code while reading.
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.highlighter-rouge:hover .copy-code,
+.highlighter-rouge:focus-within .copy-code {
+  opacity: 1;
+}
+
+// Coarse pointers have no hover, so keep it permanently visible there.
+@media (hover: none) {
+  .copy-code { opacity: 1; }
+}
+
 // -------------------------------- post -------------------------------------
 
 .post-header {
@@ -649,6 +762,19 @@ pre {
   .go, .gp   { color: var(--sx-comment); }
   .gr, .gt   { color: var(--sx-err-fg); }
   .w         { color: var(--border-strong); }
+}
+
+// --------------------------------- math ------------------------------------
+// KaTeX display equations do not wrap. Long ones (e.g. the PPO clipped
+// objective) are wider than a phone's content column and were being cut off
+// with no way to reach the rest, since .katex-display defaults to
+// overflow: visible. Let them scroll horizontally on their own.
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 // -------------------------- callouts (Toast) -------------------------------

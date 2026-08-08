@@ -1,0 +1,44 @@
+---
+layout: default
+---
+{%- comment -%}
+  Overrides minima 2.5.1's _layouts/home.html, which hardcodes the English
+  strings "Posts" and "subscribe via RSS" and an English date format on an
+  otherwise entirely Turkish site.
+{%- endcomment -%}
+<div class="home">
+  {%- if page.title -%}
+    <h1 class="page-heading">{{ page.title }}</h1>
+  {%- endif -%}
+
+  {{ content }}
+
+  {%- if site.posts.size > 0 -%}
+    <h2 class="post-list-heading">{{ page.list_title | default: "Yazılar" }}</h2>
+    <ul class="post-list">
+      {%- for post in site.posts -%}
+      <li>
+        <span class="post-meta">
+          {%- include date-tr.html date=post.date -%}
+          {%- assign kelime = post.content | strip_html | number_of_words -%}
+          <span class="post-meta-sep" aria-hidden="true">·</span>
+          {{ kelime | divided_by: 200 | plus: 1 }} dk okuma
+        </span>
+        <h3>
+          <a class="post-link" href="{{ post.url | relative_url }}">
+            {{ post.title | escape }}
+          </a>
+        </h3>
+        {%- if site.show_excerpts -%}
+          {{ post.excerpt }}
+        {%- endif -%}
+      </li>
+      {%- endfor -%}
+    </ul>
+
+    <p class="rss-subscribe">
+      <a href="{{ "/feed.xml" | relative_url }}">RSS ile abone olun</a>
+    </p>
+  {%- endif -%}
+
+</div>

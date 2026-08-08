@@ -1,0 +1,57 @@
+---
+layout: default
+---
+{%- comment -%}
+  Overrides minima 2.5.1's _layouts/post.html.
+
+  Adding files to _layouts does NOT interfere with jekyll-default-layout: that
+  plugin assigns the layout *name* ("post") to front-matter-less documents, and
+  Jekyll then resolves the name from the local _layouts before the theme's.
+{%- endcomment -%}
+<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+        {%- include date-tr.html date=page.date -%}
+      </time>
+      {%- comment -%}
+        ~200 wpm is the figure for Turkish; the 265 wpm usually quoted is for
+        English. strip_html so markup isn't counted as words.
+      {%- endcomment -%}
+      {%- assign kelime = content | strip_html | number_of_words -%}
+      <span class="post-meta-sep" aria-hidden="true">·</span>
+      <span class="reading-time">{{ kelime | divided_by: 200 | plus: 1 }} dk okuma</span>
+      {%- if page.author %}
+        <span class="post-meta-sep" aria-hidden="true">·</span>
+        <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
+      {%- endif -%}
+    </p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    {{ content }}
+  </div>
+
+  {%- if page.previous or page.next -%}
+  <nav class="post-nav" aria-label="Diğer yazılar">
+    {%- if page.previous -%}
+    <a class="post-nav-link post-nav-prev" href="{{ page.previous.url | relative_url }}" rel="prev">
+      <span class="post-nav-label">← Önceki yazı</span>
+      <span class="post-nav-title">{{ page.previous.title | escape }}</span>
+    </a>
+    {%- else -%}
+    <span class="post-nav-link post-nav-empty" aria-hidden="true"></span>
+    {%- endif -%}
+    {%- if page.next -%}
+    <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}" rel="next">
+      <span class="post-nav-label">Sonraki yazı →</span>
+      <span class="post-nav-title">{{ page.next.title | escape }}</span>
+    </a>
+    {%- endif -%}
+  </nav>
+  {%- endif -%}
+
+  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+</article>

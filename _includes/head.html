@@ -110,4 +110,70 @@
   })();
   </script>
 
+  {%- comment -%}
+    Copy button on code blocks. The posts are follow-along Python tutorials
+    with up to 11 blocks each, so this matters more here than on a prose blog.
+  {%- endcomment -%}
+  <script>
+  (function () {
+    var IDLE = "Kopyala", DONE = "Kopyalandı", FAIL = "Kopyalanamadı";
+
+    // navigator.clipboard needs a secure context AND a focused document, and
+    // rejects with NotAllowedError otherwise. Fall back to a throwaway
+    // textarea so the button still works in those cases.
+    function legacyCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:absolute;left:-9999px;top:0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+
+    function copy(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text).catch(function () {
+          if (legacyCopy(text)) return;
+          throw new Error("copy failed");
+        });
+      }
+      return legacyCopy(text) ? Promise.resolve() : Promise.reject(new Error("copy failed"));
+    }
+
+    function addCopyButtons() {
+      document.querySelectorAll(".post-content .highlighter-rouge").forEach(function (block) {
+        var pre = block.querySelector("pre");
+        if (!pre || block.querySelector(".copy-code")) return;
+        var btn = document.createElement("button");
+        var timer;
+        btn.type = "button";
+        btn.className = "copy-code";
+        btn.textContent = IDLE;
+        btn.setAttribute("aria-label", "Kod bloğunu kopyala");
+        btn.addEventListener("click", function () {
+          // Reset only once the attempt has settled, so a slow write can't
+          // leave the button stuck showing "Kopyalandı".
+          function settle(label) {
+            btn.textContent = label;
+            clearTimeout(timer);
+            timer = setTimeout(function () { btn.textContent = IDLE; }, 2000);
+          }
+          copy(pre.innerText).then(function () { settle(DONE); },
+                                   function () { settle(FAIL); });
+        });
+        block.appendChild(btn);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", addCopyButtons);
+    } else {
+      addCopyButtons();
+    }
+  })();
+  </script>
+
 </head>
