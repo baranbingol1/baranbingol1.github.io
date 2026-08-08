@@ -30,5 +30,11 @@ end
 # Performance-booster for watching directories on Windows
 gem "wdm", "~> 0.1.1", :install_if => Gem.win_platform?
 
-gem "faraday", "< 1.0"
+# NOTE: GitHub Pages ignores this Gemfile entirely on the classic (legacy) build
+# — it uses its own pinned `github-pages` gem set. So this file only affects
+# local preview via `docker compose up`.
+#
+# There used to be a `gem "faraday", "< 1.0"` pin here (a 2019-era workaround).
+# Modern github-pages -> octokit requires faraday >= 2, so that pin made
+# `bundle install` unresolvable. Removed.
 

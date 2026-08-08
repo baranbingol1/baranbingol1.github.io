@@ -1,0 +1,32 @@
+# Local preview for the blog. Requires only Docker — no Ruby on the host.
+#
+#   docker compose up          -> http://localhost:4000  (live reload on save)
+#   docker compose down        -> stop
+#   docker compose run --rm blog bundle update   -> refresh gem versions
+#
+# The first run installs the `github-pages` gem set and takes a few minutes.
+# It is cached in the named `bundle` volume, so later runs start in seconds.
+services:
+  blog:
+    image: ruby:3.3
+    working_dir: /site
+    ports:
+      - "4000:4000"    # site
+      - "35729:35729"  # livereload
+    volumes:
+      - .:/site
+      - bundle:/usr/local/bundle
+    environment:
+      # jekyll-github-metadata reads this; without it site.github.* is blank
+      # locally and the footer GitHub link renders empty. Harmless if unset.
+      PAGES_REPO_NWO: baranbingol1/baranbingol1.github.io
+    # Keep this on ONE line. A YAML folded scalar (>) preserves newlines on
+    # more-indented continuation lines, which `bash -c` then reads as separate
+    # commands — jekyll would silently start with no flags at all, bind to
+    # container-localhost, and be unreachable from the host.
+    # --force_polling is required: inotify does not fire through a Windows
+    # bind mount, so without it nothing rebuilds on save.
+    command: bash -c "bundle check || bundle install && bundle exec jekyll serve --host 0.0.0.0 --port 4000 --livereload --force_polling"
+
+volumes:
+  bundle:

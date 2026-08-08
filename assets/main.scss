@@ -2,61 +2,741 @@
 # Only the main Sass file needs front matter (the dashes are enough)
 ---
 
-@import "{{ site.theme }}";
+// ---------------------------------------------------------------------------
+// Baran'ın Blogu — stylesheet
+//
+// This deliberately does NOT `@import "{{ site.theme }}"`. minima 2.5.1 bakes
+// its colours in at Sass compile time (`lighten($text-color, 18%)`,
+// `darken($brand-color, 15%)`, ...), so its variables cannot be pointed at CSS
+// custom properties — `lighten(var(--x), 18%)` is a hard build error. We still
+// use minima for its *layouts*, but own the CSS outright so runtime theming
+// works.
+//
+// Compiled by libsass on GitHub Pages (jekyll-sass-converter 1.5.x), so keep
+// the syntax conservative: no `@use`, no `math.div`, no `:has()`.
+// ---------------------------------------------------------------------------
 
-.post img {
-        display: block;
-        border:1px solid #021a40;
-        vertical-align: top;
-        margin-left: auto;
-        margin-right: auto;
+// ------------------------------- tokens ------------------------------------
+
+:root {
+  --font-sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-mono:  ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --measure: 48rem;
+  --radius: 10px;
+  --radius-sm: 6px;
 }
 
-.post figcaption {
-  text-align: center;
-  font-size: .8rem;
+:root[data-theme="light"] {
+  --bg:            #fdfcfa;
+  --bg-elevated:   #f4f1ea;
+  --bg-code:       #f6f4ef;
+  --bg-output:     #edeae2;
+  --text:          #1c1b19;
+  --text-muted:    #6b6862;
+  --border:        #e3ded4;
+  --border-strong: #cbc4b6;
+  --accent:        #0f6f5c;
+  --accent-hover:  #0a5344;
+  --accent-soft:   rgba(15, 111, 92, 0.09);
+  --warn:          #9a6700;
+  --warn-soft:     rgba(154, 103, 0, 0.09);
+  --shadow:        0 1px 2px rgba(28, 27, 25, 0.05), 0 4px 14px rgba(28, 27, 25, 0.05);
+
+  --img-backdrop:  transparent;
+  --img-pad:       0px;
+
+  // rouge tokens — GitHub Light.
+  // Comment is darkened from upstream's #6e7781, which lands at 4.14:1 on
+  // --bg-code and fails WCAG AA. #646d77 measures 4.78:1.
+  --sx-comment: #646d77;
+  --sx-keyword: #cf222e;
+  --sx-string:  #0a3069;
+  --sx-number:  #0550ae;
+  --sx-func:    #8250df;
+  --sx-class:   #953800;
+  --sx-builtin: #0550ae;
+  --sx-var:     #953800;
+  --sx-tag:     #116329;
+  --sx-err-fg:  #82071e;
+  --sx-err-bg:  #ffebe9;
+  --sx-add-bg:  #e6ffec;
+  --sx-del-bg:  #ffebe9;
+}
+
+:root[data-theme="dark"] {
+  --bg:            #12151a;
+  --bg-elevated:   #191d24;
+  --bg-code:       #171b21;
+  --bg-output:     #14171d;
+  --text:          #e4e1db;
+  --text-muted:    #949ba5;
+  --border:        #272d36;
+  --border-strong: #3a424e;
+  --accent:        #4fd1b0;
+  --accent-hover:  #7de5c9;
+  --accent-soft:   rgba(79, 209, 176, 0.11);
+  --warn:          #d29922;
+  --warn-soft:     rgba(210, 153, 34, 0.11);
+  --shadow:        0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+
+  // Most images here are plots and diagrams exported on white with
+  // transparency. Sitting them on a light mat keeps them readable instead of
+  // letting dark text vanish into a dark page.
+  --img-backdrop:  #edeae4;
+  --img-pad:       6px;
+
+  // rouge tokens — GitHub Dark
+  --sx-comment: #8b949e;
+  --sx-keyword: #ff7b72;
+  --sx-string:  #a5d6ff;
+  --sx-number:  #79c0ff;
+  --sx-func:    #d2a8ff;
+  --sx-class:   #ffa657;
+  --sx-builtin: #79c0ff;
+  --sx-var:     #ffa657;
+  --sx-tag:     #7ee787;
+  --sx-err-fg:  #ffa198;
+  --sx-err-bg:  #490202;
+  --sx-add-bg:  #0f2f1a;
+  --sx-del-bg:  #3d1113;
+}
+
+// -------------------------------- base -------------------------------------
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--text);
+  background-color: var(--bg);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+main { display: block; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.011em;
+  color: var(--text);
+  scroll-margin-top: 1.5rem;
+}
+
+p, blockquote, pre, ul, ol, dl, figure { margin-bottom: 1.1rem; }
+
+ul, ol { margin-left: 1.5rem; }
+li > ul, li > ol { margin-bottom: 0; }
+li { margin-bottom: 0.3rem; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+
+  &:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+  }
+
+  .social-media-list &:hover {
+    text-decoration: none;
+    .username { text-decoration: underline; }
+  }
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--border);
+  margin: 2.5rem 0;
+}
+
+blockquote {
+  color: var(--text-muted);
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.75rem 1.1rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-style: italic;
-  color: light-grey;
+
+  > :last-child { margin-bottom: 0; }
 }
 
-.language-python { border-left: 1px solid lightcoral; }
-
-.language-python + .language-plaintext {
-        border-left: 1px solid grey;
-        margin-left: 1rem !important;
-}
-.language-python + .language-plaintext code { background-color: white !important; }
-.language-python + .language-plaintext pre  { background-color: white !important; }
-
-// for Jupyter Notebook HTML Code Cells from https://www.fast.ai/public/css/hyde.css
-
-.input_area pre, .input_area div {
-        margin-bottom:0.1rem !important;
-        margin-top:0.1rem !important;
-        padding-bottom:0 !important;
-        padding-top:0 !important;
-}
-.output_area pre, .output_area div {
-        margin-bottom:0.1rem !important;
-        margin-top:0.1rem !important;
-        padding-bottom:0 !important;
-        padding-top:0 !important;
-        background-color: white !important;
-}
-.input_area pre {
-        border-left: 1px solid lightcoral;
-}
-.output_area pre {
-        border-left: 1px solid grey;
-        margin-left: 1rem !important;
-}
-.codecell {
-        border-right: 2px solid lightgrey;
-        margin-bottom:1rem !important;
-        margin-top:1rem !important;
-        padding-bottom:0 !important;
-        padding-top:0 !important;
+.wrapper {
+  max-width: var(--measure);
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  width: 100%;
 }
 
-.codecell table { width: auto; }
+@media screen and (max-width: 600px) {
+  .wrapper { padding-right: 1.1rem; padding-left: 1.1rem; }
+  body { font-size: 1rem; }
+}
 
+// ------------------------------- header ------------------------------------
+
+.site-header {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+
+  .wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4rem;
+  }
+}
+
+.site-title {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--text);
+
+  &:visited { color: var(--text); }
+  &:hover { color: var(--accent); text-decoration: none; }
+}
+
+.site-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.site-nav {
+  position: relative;
+
+  .nav-trigger { display: none; }
+  label[for="nav-trigger"] { display: none; }
+  .menu-icon { display: none; }
+
+  .trigger {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .page-link {
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    color: var(--text-muted);
+
+    &:hover { color: var(--accent); text-decoration: none; }
+  }
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.theme-toggle-icon { display: block; }
+
+:root[data-theme="light"] .icon-sun  { display: none; }
+:root[data-theme="dark"]  .icon-moon { display: none; }
+
+// Mobile nav — minima's CSS-only checkbox dropdown, restyled.
+@media screen and (max-width: 600px) {
+  // Roomier tap targets on touch screens (2.1rem = 34px is under the ~44px
+  // guideline).
+  .theme-toggle { width: 2.6rem; height: 2.6rem; }
+
+  .site-nav {
+    label[for="nav-trigger"] {
+      display: block;
+      width: 2.6rem;
+      height: 2.6rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg-elevated);
+    }
+
+    .menu-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      > svg { fill: var(--text-muted); }
+    }
+
+    .trigger {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.6rem);
+      z-index: 30;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+      min-width: 10rem;
+      padding: 0.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+    }
+
+    input:checked ~ .trigger { display: flex; }
+
+    .page-link {
+      display: block;
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+
+      &:hover { background: var(--accent-soft); }
+    }
+  }
+}
+
+// ---------------------------- page content ---------------------------------
+
+.page-content {
+  flex: 1;
+  padding: 2.75rem 0 3.5rem;
+}
+
+.page-heading { font-size: 1.9rem; }
+
+// ------------------------------ post list ----------------------------------
+
+.post-list-heading {
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.post-list {
+  margin-left: 0;
+  list-style: none;
+
+  > li {
+    padding: 1.35rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+
+    &:last-child { border-bottom: 0; }
+  }
+
+  h3 { margin-bottom: 0.15rem; }
+}
+
+.post-meta {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.post-link {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 1.3rem;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--text);
+
+  &:hover { color: var(--accent); text-decoration: none; }
+}
+
+.rss-subscribe {
+  margin-top: 2rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+// -------------------------------- post -------------------------------------
+
+.post-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-title {
+  font-size: 2.35rem;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.6rem;
+}
+
+.post-header .post-meta { margin-bottom: 0; }
+
+@media screen and (max-width: 800px) {
+  .post-title { font-size: 1.9rem; }
+}
+
+.post-content {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.6rem;
+    margin-top: 2.75rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.28rem;
+    margin-top: 2.1rem;
+    margin-bottom: 0.7rem;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+    margin-top: 1.7rem;
+    margin-bottom: 0.6rem;
+  }
+
+  > :first-child { margin-top: 0; }
+
+  strong { font-weight: 700; }
+}
+
+@media screen and (max-width: 800px) {
+  .post-content h2 { font-size: 1.42rem; }
+  .post-content h3 { font-size: 1.18rem; }
+}
+
+// -------------------------- table of contents ------------------------------
+// kramdown's `{:toc}` emits <ul id="markdown-toc">. Stable hook, so style it
+// as a real contents card.
+
+#markdown-toc {
+  margin: 1.75rem 0 2.5rem;
+  padding: 1.1rem 1.35rem 1.1rem 2.5rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.55;
+
+  &::before {
+    content: "İçindekiler";
+    display: block;
+    margin-left: -1rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  li { margin-bottom: 0.22rem; }
+
+  ul {
+    margin-top: 0.22rem;
+    margin-bottom: 0.22rem;
+    font-size: 0.95em;
+  }
+
+  a {
+    color: var(--text-muted);
+    &:hover { color: var(--accent); text-decoration: none; }
+  }
+}
+
+// ------------------------------- images ------------------------------------
+
+img { max-width: 100%; vertical-align: middle; }
+
+.post-content img,
+.post img {
+  display: block;
+  height: auto;
+  margin: 1.75rem auto;
+  padding: var(--img-pad);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--img-backdrop);
+}
+
+figure { margin-bottom: 1.5rem; }
+figure > img { display: block; }
+
+figcaption,
+.image-caption,
+.post figcaption {
+  margin-top: -0.9rem;
+  margin-bottom: 1.75rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.83rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+// ------------------------------- tables ------------------------------------
+
+table {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  text-align: left;
+
+  th, td {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--bg-elevated);
+    font-weight: 650;
+  }
+
+  tr:nth-child(even) td { background: var(--bg-elevated); }
+}
+
+// ---------------------------- code & output --------------------------------
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+pre {
+  font-family: var(--font-mono);
+  overflow-x: auto;
+}
+
+.highlighter-rouge {
+  margin: 1.5rem 0;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+
+  .highlight {
+    background: none;
+    margin: 0;
+  }
+
+  pre.highlight,
+  pre {
+    background: none;
+    border: 0;
+    margin: 0;
+    padding: 0.9rem 1.05rem;
+    overflow-x: auto;
+  }
+
+  code {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 0.845rem;
+    line-height: 1.65;
+  }
+}
+
+// Posts follow a code-then-output convention: a ```python fence immediately
+// followed by a bare ``` fence holding the printed result. Render the second
+// as a quieter, attached output panel.
+.language-python.highlighter-rouge {
+  border-left: 3px solid var(--accent);
+}
+
+.language-python.highlighter-rouge + .language-plaintext.highlighter-rouge {
+  margin-top: -1.1rem;
+  margin-left: 1.25rem;
+  background: var(--bg-output);
+  border-left: 3px solid var(--border-strong);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  color: var(--text-muted);
+
+  code { font-size: 0.8rem; }
+}
+
+// ------------------------- syntax highlighting ------------------------------
+
+.highlight {
+  .c, .cm, .c1, .cd { color: var(--sx-comment); font-style: italic; }
+  .cp, .cs          { color: var(--sx-comment); font-weight: 600; }
+
+  .k, .kc, .kd, .kn, .kp, .kr, .kv { color: var(--sx-keyword); }
+  .o, .ow                          { color: var(--sx-keyword); }
+
+  .kt        { color: var(--sx-class); }
+  .s, .s1, .s2, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss { color: var(--sx-string); }
+  .m, .mf, .mh, .mi, .mo, .mb, .il { color: var(--sx-number); }
+  .nf, .fm   { color: var(--sx-func); }
+  .nc, .nn   { color: var(--sx-class); }
+  .ne        { color: var(--sx-class); font-weight: 600; }
+  .nb, .bp   { color: var(--sx-builtin); }
+  .na, .no, .nv, .vc, .vg, .vi, .py { color: var(--sx-var); }
+  .nt        { color: var(--sx-tag); }
+
+  .err       { color: var(--sx-err-fg); background-color: var(--sx-err-bg); }
+  .gi        { background-color: var(--sx-add-bg); }
+  .gd        { background-color: var(--sx-del-bg); }
+  .ge        { font-style: italic; }
+  .gs        { font-weight: 600; }
+  .gh, .gu   { color: var(--sx-comment); font-weight: 600; }
+  .go, .gp   { color: var(--sx-comment); }
+  .gr, .gt   { color: var(--sx-err-fg); }
+  .w         { color: var(--border-strong); }
+}
+
+// -------------------------- callouts (Toast) -------------------------------
+// These classes used to come from an unpinned @primer/css CDN bundle. The
+// octicon SVGs are inlined server-side by jekyll-octicons, so only the box
+// styling was actually needed — now it lives here and follows the theme.
+
+.Toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1.6rem 0;
+  padding: 0.85rem 1.05rem;
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.Toast-icon {
+  flex: 0 0 auto;
+  line-height: 0;
+  padding-top: 0.3rem;
+  color: var(--accent);
+
+  svg { display: block; fill: currentColor; }
+}
+
+.Toast-content { flex: 1 1 auto; }
+
+.Toast--warning {
+  background: var(--warn-soft);
+  border-left-color: var(--warn);
+
+  .Toast-icon { color: var(--warn); }
+}
+
+// ------------------------------- footer ------------------------------------
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+  padding: 2.25rem 0;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.footer-heading {
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.footer-col-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  color: var(--text-muted);
+}
+
+.footer-col {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.contact-list,
+.social-media-list {
+  list-style: none;
+  margin-left: 0;
+
+  li { margin-bottom: 0.35rem; }
+}
+
+.svg-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  fill: var(--text-muted);
+  padding-right: 5px;
+  vertical-align: text-top;
+}
+
+@media screen and (max-width: 600px) {
+  .footer-col { flex: 1 1 100%; }
+}
