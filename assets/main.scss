@@ -23,38 +23,59 @@
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --font-mono:  ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
+  // Full column, used by the header, footer, and by wide blocks inside a post
+  // (code, tables, figures, display math).
   --measure: 48rem;
+  // Prose column. 48rem ran ~85 characters per line, above the 60-75 comfort
+  // range — and Turkish's long agglutinated words push it wider still.
+  --measure-prose: 39rem;
   --radius: 10px;
   --radius-sm: 6px;
 }
 
 :root[data-theme="light"] {
-  --bg:            #fdfcfa;
-  --bg-elevated:   #f4f1ea;
+  --bg:            #fcfbf9;
+  --bg-elevated:   #f3f1ec;
   --bg-code:       #f6f4ef;
-  --bg-output:     #edeae2;
-  --text:          #1c1b19;
-  --text-muted:    #6b6862;
-  --border:        #e3ded4;
-  --border-strong: #cbc4b6;
-  --accent:        #0f6f5c;
-  --accent-hover:  #0a5344;
-  --accent-soft:   rgba(15, 111, 92, 0.09);
-  --warn:          #9a6700;
-  --warn-soft:     rgba(154, 103, 0, 0.09);
-  --shadow:        0 1px 2px rgba(28, 27, 25, 0.05), 0 4px 14px rgba(28, 27, 25, 0.05);
+  --bg-output:     #edeae3;
+  --text:          #17161a;
+  // Muted and accent are both a step darker than they look like they need to
+  // be: the selection wash costs ~1 point of contrast, and at the original
+  // values (#6a675f, #8a6300) links and meta text dropped to 4.45 and 4.28
+  // while selected.
+  --text-muted:    #635f57;
+  --border:        #e4e0d6;
+  --border-strong: #cbc5b7;
+  --accent:        #805b00;
+  --accent-hover:  #634600;
+  --accent-soft:   rgba(128, 91, 0, 0.09);
+  // The accent is itself gold, so a gold warning would be indistinguishable
+  // from an info callout. Rust keeps the two semantically apart.
+  --warn:          #a2401f;
+  --warn-soft:     rgba(162, 64, 31, 0.09);
+  --shadow:        0 1px 2px rgba(23, 22, 26, 0.05), 0 4px 14px rgba(23, 22, 26, 0.05);
+
+  // Neutral, deliberately shallow. `color: inherit` on ::selection keeps the
+  // text's own colour, so selecting code does not flatten its syntax
+  // highlighting into one colour.
+  --selection-bg:  rgba(20, 20, 25, 0.10);
 
   --img-backdrop:  transparent;
   --img-pad:       0px;
 
-  // rouge tokens — GitHub Light.
-  // Comment is darkened from upstream's #6e7781, which lands at 4.14:1 on
-  // --bg-code and fails WCAG AA. #646d77 measures 4.78:1.
-  --sx-comment: #646d77;
-  --sx-keyword: #cf222e;
+  // rouge tokens — GitHub Light, with the neutrals warmed to sit on the
+  // warm-paper background. Comment is darkened well past upstream's #6e7781
+  // (4.14:1, fails AA) because the selection wash sits on top of the code
+  // background and costs about a point of contrast: 5.83:1 normally, still
+  // 4.76:1 while selected.
+  --sx-comment: #655e53;
+  // Darkened from GitHub Light's #cf222e (4.87 normal, 3.98 selected) and
+  // #8250df (4.59 normal, 3.75 selected) — both failed AA once the selection
+  // wash was composited over the code background.
+  --sx-keyword: #b31a24;
   --sx-string:  #0a3069;
   --sx-number:  #0550ae;
-  --sx-func:    #8250df;
+  --sx-func:    #6d3ac0;
   --sx-class:   #953800;
   --sx-builtin: #0550ae;
   --sx-var:     #953800;
@@ -66,20 +87,24 @@
 }
 
 :root[data-theme="dark"] {
-  --bg:            #12151a;
-  --bg-elevated:   #191d24;
-  --bg-code:       #171b21;
-  --bg-output:     #14171d;
-  --text:          #e4e1db;
-  --text-muted:    #949ba5;
-  --border:        #272d36;
-  --border-strong: #3a424e;
-  --accent:        #4fd1b0;
-  --accent-hover:  #7de5c9;
-  --accent-soft:   rgba(79, 209, 176, 0.11);
-  --warn:          #d29922;
-  --warn-soft:     rgba(210, 153, 34, 0.11);
+  --bg:            #141416;
+  --bg-elevated:   #1c1c1f;
+  --bg-code:       #1a1a1d;
+  --bg-output:     #161618;
+  --text:          #e6e3dd;
+  // Lightened from #9a968d, which fell to 4.28 under the selection wash.
+  --text-muted:    #a49f96;
+  --border:        #2b2b2f;
+  --border-strong: #3d3d43;
+  --accent:        #d8ab52;
+  --accent-hover:  #e8c079;
+  --accent-soft:   rgba(216, 171, 82, 0.12);
+  --warn:          #e0876f;
+  --warn-soft:     rgba(224, 135, 111, 0.12);
   --shadow:        0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+
+  // A faint light overlay, not grey — grey would read as dirt on a dark page.
+  --selection-bg:  rgba(255, 255, 255, 0.13);
 
   // Most images here are plots and diagrams exported on white with
   // transparency. Sitting them on a light mat keeps them readable instead of
@@ -87,8 +112,10 @@
   --img-backdrop:  #edeae4;
   --img-pad:       6px;
 
-  // rouge tokens — GitHub Dark
-  --sx-comment: #8b949e;
+  // rouge tokens — GitHub Dark. Comment lightened from upstream's #8b949e:
+  // the selection wash lifts the code background from #1a1a1d to ~#38383a,
+  // which dropped #8b949e to 3.80:1. #a2a9b1 holds 4.93:1 while selected.
+  --sx-comment: #a2a9b1;
   --sx-keyword: #ff7b72;
   --sx-string:  #a5d6ff;
   --sx-number:  #79c0ff;
@@ -101,6 +128,42 @@
   --sx-err-bg:  #490202;
   --sx-add-bg:  #0f2f1a;
   --sx-del-bg:  #3d1113;
+}
+
+// ----------------------------- selection ------------------------------------
+// Only 7 properties are honoured inside ::selection (color, background-color,
+// text-decoration-*, text-shadow, -webkit-text-stroke/fill); background-image
+// is ignored outright.
+//
+// `color: inherit` is deliberate, not a no-op: a background with no colour
+// makes browsers treat colour as inherited anyway, and WebKit will silently
+// invert colours it judges too low-contrast. Stating it keeps the text's own
+// colour — which is what preserves syntax highlighting in selected code — and
+// keeps contrast identical to the unselected state.
+//
+// These MUST stay separate rules. Comma-grouping ::selection with
+// ::-moz-selection invalidates the whole rule in browsers that only know one.
+
+::selection {
+  background-color: var(--selection-bg);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: var(--selection-bg);
+  color: inherit;
+}
+
+// Windows High Contrast and similar: hand selection back to the system.
+@media (forced-colors: active) {
+  ::selection {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+  ::-moz-selection {
+    background-color: Highlight;
+    color: HighlightText;
+  }
 }
 
 // -------------------------------- base -------------------------------------
@@ -145,7 +208,9 @@ h1, h2, h3, h4, h5, h6 {
 
 p, blockquote, pre, ul, ol, dl, figure { margin-bottom: 1.1rem; }
 
-ul, ol { margin-left: 1.5rem; }
+// Indent via padding, not margin: the prose-measure rules below centre these
+// with `margin-inline: auto`, which would otherwise wipe out the list indent.
+ul, ol { padding-left: 1.5rem; }
 li > ul, li > ol { margin-bottom: 0; }
 li { margin-bottom: 0.3rem; }
 
@@ -364,6 +429,7 @@ blockquote {
 
 .post-list {
   margin-left: 0;
+  padding-left: 0;
   list-style: none;
 
   > li {
@@ -574,12 +640,49 @@ blockquote {
   .post-content h3 { font-size: 1.18rem; }
 }
 
+// ---------------------------- prose measure --------------------------------
+// Text runs in a narrower column than the wrapper, while code, tables, figures
+// and display math keep the full width so they aren't cramped. Both are
+// centred inside the same wrapper, so the page stays symmetric and the wide
+// blocks read as a deliberate breakout rather than a misalignment.
+
+.post-header,
+.post-nav,
+.post-content > p,
+.post-content > ul,
+.post-content > ol,
+.post-content > dl,
+.post-content > blockquote,
+.post-content > h1,
+.post-content > h2,
+.post-content > h3,
+.post-content > h4,
+.post-content > h5,
+.post-content > h6,
+.post-content > hr,
+.post-content > .Toast {
+  max-width: var(--measure-prose);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// Nested lists must not re-centre — they indent from their parent.
+.post-content li > ul,
+.post-content li > ol {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 // -------------------------- table of contents ------------------------------
 // kramdown's `{:toc}` emits <ul id="markdown-toc">. Stable hook, so style it
 // as a real contents card.
 
 #markdown-toc {
-  margin: 1.75rem 0 2.5rem;
+  // `auto` on the sides, not 0: this is an ID selector and would otherwise
+  // out-specify the prose-measure rule above and sit off-centre.
+  max-width: var(--measure-prose);
+  margin: 1.75rem auto 2.5rem;
   padding: 1.1rem 1.35rem 1.1rem 2.5rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -850,6 +953,7 @@ pre {
 .social-media-list {
   list-style: none;
   margin-left: 0;
+  padding-left: 0;
 
   li { margin-bottom: 0.35rem; }
 }

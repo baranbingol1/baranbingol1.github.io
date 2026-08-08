@@ -22,10 +22,16 @@
     })();
   </script>
   <meta name="color-scheme" content="light dark">
-  <meta id="theme-color-meta" name="theme-color" content="#fdfcfa">
+  <meta id="theme-color-meta" name="theme-color" content="#fcfbf9">
 
-  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" sizes="any">
-  <link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}">
+  {%- comment -%}
+    Browsers cache favicons far more aggressively than other assets and will
+    happily keep serving a stale one for days. Bump `icon_v` whenever the icon
+    art changes so the new one actually reaches people.
+  {%- endcomment -%}
+  {%- assign icon_v = 2 -%}
+  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}?v={{ icon_v }}" sizes="any">
+  <link rel="apple-touch-icon" href="{{ '/apple-touch-icon.png' | relative_url }}?v={{ icon_v }}">
 
   {%- comment -%}
     jekyll-seo-tag builds the homepage <title> as "site.title | site.description",
@@ -90,16 +96,33 @@
   <script>
   (function () {
     function wrapImages() {
-      document.querySelectorAll(".post img[title]").forEach(function (el) {
-        var title = el.getAttribute("title");
-        if (!title || el.parentNode.classList.contains("image")) return;
+      document.querySelectorAll(".post-content img").forEach(function (el) {
+        var parent = el.parentNode;
+        if (parent.classList.contains("image")) return;
+
         var figure = document.createElement("figure");
         figure.className = "image";
-        var caption = document.createElement("figcaption");
-        caption.appendChild(document.createTextNode(title));
-        el.parentNode.insertBefore(figure, el);
+
+        // kramdown puts a standalone image inside a <p>. Leaving the figure in
+        // there would be invalid HTML (<figure> is not phrasing content) and
+        // would also trap the image at the narrow prose measure. When the <p>
+        // holds nothing but this image, replace it outright.
+        var onlyChild = parent.tagName === "P" &&
+                        parent.children.length === 1 &&
+                        parent.textContent.trim() === "";
+        if (onlyChild) {
+          parent.parentNode.replaceChild(figure, parent);
+        } else {
+          parent.insertBefore(figure, el);
+        }
         figure.appendChild(el);
-        figure.appendChild(caption);
+
+        var title = el.getAttribute("title");
+        if (title) {
+          var caption = document.createElement("figcaption");
+          caption.appendChild(document.createTextNode(title));
+          figure.appendChild(caption);
+        }
       });
     }
     if (document.readyState === "loading") {
