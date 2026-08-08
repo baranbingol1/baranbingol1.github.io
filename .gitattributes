@@ -1,0 +1,23 @@
+# Normalise text files to LF, in the repository AND in the working tree.
+#
+# This is not cosmetic. Jekyll's default `excerpt_separator` is "\n\n", which
+# never matches "\r\n\r\n" — so with CRLF post files, every post's excerpt
+# silently resolved to the ENTIRE document. That shipped the full text of each
+# post as its <meta name="description"> (23,000+ characters on the TÜDÜM post)
+# and as its RSS <summary>.
+#
+# `eol=lf` rather than plain `text=auto` so the working tree matches what
+# GitHub Pages builds from; otherwise excerpts would behave differently in
+# local preview than in production.
+* text=auto eol=lf
+
+# Never touch binary assets.
+*.png  -text
+*.jpg  -text
+*.jpeg -text
+*.gif  -text
+*.avif -text
+*.webp -text
+*.ico  -text
+*.woff  -text
+*.woff2 -text

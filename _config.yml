@@ -10,6 +10,23 @@ title: Baran'ın Blogu
 description: Veri Bilimi kavramlarının anlatıldığı bloga hoşgeldiniz!
 github_username: baranbingol1
 
+# The content is Turkish. Without this, minima's layout emits <html lang="en">
+# and jekyll-seo-tag emits og:locale=en_US, telling search engines the wrong
+# language for every page on the site.
+lang: tr-TR
+
+# Fallback social-share preview. jekyll-seo-tag reads `page.image`, NOT a
+# top-level `site.image`, so this has to go through Jekyll defaults to apply
+# site-wide. Without it every share rendered as a bare text card.
+# Only `image` is set here — adding `title` or `layout` would disable
+# jekyll-titles-from-headings and jekyll-default-layout, which this site
+# depends on because no post has front matter.
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /images/og-default.png
+
 # Email and twitter are optional:
 email:
 twitter_username:
@@ -27,6 +44,9 @@ plugins:
   - jekyll-gist
   - jekyll-octicons
   - jekyll-github-metadata
+  # sitemap.xml was returning 404 — the plugin is on GitHub Pages' whitelist
+  # but was simply never enabled.
+  - jekyll-sitemap
 
 titles_from_headings:
   enabled:     true
