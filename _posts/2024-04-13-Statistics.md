@@ -39,15 +39,15 @@ Box Plot: Değişkenin merkezi eğilimini, yayılımını ve özellikle de aykı
 - Iris-Versicolour (label değeri olarak 1)
 - Iris-Virginica (label değeri olarak 2)
 
-![](/images/istatistik-blog/distribution-plot.png "Özniteliklerin dağılım grafikleri")
+![Özniteliklerin dağılım grafikleri](/images/istatistik-blog/distribution-plot.png "Özniteliklerin dağılım grafikleri"){: width="1600" height="800"}
 
 Bu altı grafikte öncelikle 4 özniteliğimiz olan sepal length, width ve petal length,width özniteliklerinin dağılımlarını görüyoruz. Bu dağılımları görmek için histogramlar kullandık x-ekseninde özniteliğin değer aralığı ve y-ekseninde ise o değer aralığında kaç tane örnek olduğunun sayısını görüyoruz. 5. grafiğimiz bir pie chart bu ise hedef olan sınıfın dağılımını bize yüzdesel olarak gösteriyor. Başta da söylediğimiz gibi 3 farklı sınıfın 50 tane örneği var yani her bir hedef sınıf %33,3 oranında veri setinde örneğe sahip. En son grafiğimiz olan 6. grafik ise bir box plot bu grafikte 4 farklı özniteliğin dağılımını kutu şeklinde görüyoruz. Kutuların arasından geçen çizgi "medyan" değerini gösteriyor. Kutunun altı ve üstü %25 ve %75 aralıktaki verileri gösteriyor. Kutunun dışına uzanan çizgilerin dışındaki değerler ise outlier(dış değer) değerleri gösteriyor. Örneğin sepal-width özelliğinin çoğu değerinin belli bir aralıkta olduğunu görüyoruz ve bu aralıkta olmayan outlierlar olduğunu görüyoruz.
 
-![](/images/istatistik-blog/relations-plot.png "Özniteliklerin kendi aralarındaki ilişkilerin grafikleri")
+![Özniteliklerin kendi aralarındaki ilişkilerin grafikleri](/images/istatistik-blog/relations-plot.png "Özniteliklerin kendi aralarındaki ilişkilerin grafikleri"){: loading="lazy" width="1600" height="800"}
 
 Bu dört grafikte verilerin kendi aralarındaki ilişkilerin grafikleri yer alıyor. İlk iki grafikte, sepal length vs width ve petal length vs width için scatter plot'lar görüyoruz. Her sınıf farklı renkte gösterilmiştir ve bu noktaların her biri o özniteliklerin değerlerini gösterir örneğin x-ekseninde sepal length y-ekseninde ise sepal width bulunur. Üçüncü ve dördüncü grafiklerde ise sepal length vs width ve petal length vs width için line plot'lar bulunmaktadır. Line plotlar basitçe x-ekseni artarken y-ekseninin nasıl davrandığını gösterir ancak line plotları genellikle zaman serisi verilerinde kullanmak daha doğrudur burada sadece göstermek amaçlı kullanılmıştır. Bu grafiklerde, her bir sınıfın özelliklerdeki ortalamalarının nasıl değiştiğini görebiliriz. Bu grafiklerden çıkarabileceğimiz yorumlardan biri sadece petal length ve petal width özelliklerini kullanarak bu sınıfları "lineer" olarak ayırabileceğimizdir(örneğin support vector machine modelleri ile) ancak sadece sepal length ve width özelliklerini kullanırsak bu sınıfları "lineer" olarak ayıramayız çünkü her ne kadar 0 olarak labellanan sınıf diğerlerinden lineer bir şekilde ayrılsada diğer iki sınıfın birbirinden lineer olarak ayrılamayacak kadar daha kompleks bir ilişki içerisinde olduğunu görüyoruz. Bu tarz grafiklerle öznitelikler arasındaki ilişkileri incelemek bize hangi modelleri kullanıp kullanmayacağımız hakkında bilgi verebilir.
 
-![](/images/istatistik-blog/correlations-plot.png "Özniteliklerin korelasyonlarının grafiği")
+![Özniteliklerin korelasyonlarının grafiği](/images/istatistik-blog/correlations-plot.png "Özniteliklerin korelasyonlarının grafiği"){: loading="lazy" width="1600" height="1200"}
 
 Bu grafik çeşidine heatmap denmektedir. Ve bu grafiğe bakarak hangi özelliklerin hangileriyle daha fazla korele olduklarını görebiliriz. 1 değeri tam lineer bir ilişki olduğunu gösterir ve "sıcak"lığı fazladır daha kırmızıdır kısacası -1 ise tam tersi lineer bir ilişki olduğunu gösterir yani bir değer azalırken diğerinin arttığını söyler. 0 ise aralarında bir ilişki bulunmadığını gösterir. Genellikle modeller oluştururken feature selection(öznitelik seçimi)nda bu grafikten yararlanılır. Aralarında 0.95 gibi değerlerden daha fazla (veya -0.95) korelasyon olan öznitelikler genellikle modele ekstra "bilgi" vermez. Bu nedenle öznitelik seçimi yaparken yüksek korelasyonlu özniteliklerin dikkatlice değerlendirilmesi önemlidir.
 
@@ -169,7 +169,7 @@ print(df.describe()) # verinin temel istatistiklerini bastırır.
 
 Örneğin aşağıda describe() metodunun "Iris" veri setindeki öznitelikler üzerindeki sonucu verilmiştir. Bu temel istatistiklerle veriyi daha iyi anlayabiliriz.
 
-![](/images/istatistik-blog/describe-method.png "Describe metodu")
+![Describe metodu](/images/istatistik-blog/describe-method.png "Describe metodu"){: loading="lazy" width="597" height="281"}
 
 ## Olasılık Dağılımları 
 
@@ -231,7 +231,7 @@ plt.grid(True)
 plt.show()
 ```
 
-![](/images/istatistik-blog/customer-plot.png "Müşteri sayısı grafiği")
+![Müşteri sayısı grafiği](/images/istatistik-blog/customer-plot.png "Müşteri sayısı grafiği"){: loading="lazy" width="1600" height="1200"}
 
 ## Hipotez Testleri
 

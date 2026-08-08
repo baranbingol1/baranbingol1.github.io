@@ -62,7 +62,7 @@ Blogun bu kısmında [klasik iris veri seti](https://www.kaggle.com/datasets/uci
 
 Aşağıdaki resimde 5 katlı cross validation'nın şeması bulunmaktadır.
 
-![](/images/hyperparameter-blog/grid_search_cross_validation.png "Cross validation şeması")
+![Cross validation şeması](/images/hyperparameter-blog/grid_search_cross_validation.png "Cross validation şeması"){: width="885" height="613"}
 
 Veri seti, 5 alt kümeye (katlara) bölünür. Her bir katlama sırayla test için ayrılırken diğer katlamalar eğitim için kullanılır. Bu işlem 5 kez tekrarlanır ve her seferinde farklı bir katlama test için ayrılır. Sonuçlar ortalaması alınarak genel model performansı hesaplanır.
 Cross validation, modelin overfitting yapma olasılığını azaltır ve hiperparametre optimizasyonunda daha güvenilir sonuçlar elde etmemizi sağlar. Bu nedenle, hiperparametre optimizasyonu yaparken cross validation kullanmak önemlidir.

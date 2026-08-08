@@ -4,7 +4,7 @@ description: A2C, PPO ve TD3 algoritmalarını teorik olarak inceliyor ve OpenAI
 
 # Pekiştirmeli Öğrenmede Modern Algoritmalar: A2C, PPO ve TD3'ü LunarLander'da Test Ediyoruz
 
-![Lunarlander Temsili Fotoğrafı](/images/rl-lunarlander-blog/lunarlander-temsili.png)
+![Lunarlander Temsili Fotoğrafı](/images/rl-lunarlander-blog/lunarlander-temsili.png){: width="1600" height="896"}
 
 Pekiştirmeli öğrenme (RL) algoritmaları son yıllarda inanılmaz bir gelişme gösterdi. Bu yazıda, üç modern RL algoritmasını - A2C, PPO ve TD3 - hem teorik hem de pratik olarak inceleyeceğiz. Hepsini OpenAI Gym'in klasik LunarLander ortamında test ederek gerçek performanslarını karşılaştıracağız.
 
@@ -33,7 +33,7 @@ $$L_{critic} = \frac{1}{N}\sum_{i=1}^{N} (R_i - V_\phi(s_i))^2$$
 
 Aşağıda, PPO algoritmasında küçük politika güncellemelerinin büyük adımlara kıyasla neden daha etkili olabileceğini gösteren bir görsel yer alıyor. 
 
-![PPO Küçük Adımlar](/images/rl-lunarlander-blog/ppo-kucuk-adimlar.png "Kaynak: https://huggingface.co/blog/deep-rl-ppo")
+![PPO Küçük Adımlar](/images/rl-lunarlander-blog/ppo-kucuk-adimlar.jpg "Kaynak: https://huggingface.co/blog/deep-rl-ppo"){: loading="lazy" width="684" height="1066"}
 
 ### Implementasyon
 
@@ -109,7 +109,7 @@ $$y = r + \gamma \min_{i=1,2} Q_{\phi'_i}(s', \pi_{\theta'}(s') + \epsilon)$$
 
 Aşağıda TD3 mimarisin gösteren bir görsel yer almaktadır.
 
-![TD3 mimarisi](/images/rl-lunarlander-blog/td3-mimarisi.png "Kaynak: https://www.researchgate.net/figure/Architecture-of-Twin-delayed-DDPG-TD3_fig5_360567032")
+![TD3 mimarisi](/images/rl-lunarlander-blog/td3-mimarisi.png "Kaynak: https://www.researchgate.net/figure/Architecture-of-Twin-delayed-DDPG-TD3_fig5_360567032"){: loading="lazy" width="1424" height="834"}
 
 ### Implementasyon
 
@@ -187,7 +187,7 @@ for _ in range(1000):
 
 PPO modelini alıp yeterince uzun süre eğitirseniz (mean_reward = 200 olana kadar) aşağıdaki gibi bir davranışı olacaktır :
 
-![PPO LunarLander performansı GIF](/images/rl-lunarlander-blog/ppo-lunarlander.gif)
+![PPO LunarLander performansı GIF](/images/rl-lunarlander-blog/ppo-lunarlander.gif){: loading="lazy" width="480" height="320"}
 
 ## Sonuç
 

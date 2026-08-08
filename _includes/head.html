@@ -79,26 +79,35 @@
     </script>
   {% endif %}
 
+  {%- comment -%}
+    kramdown cannot emit <figure>/<figcaption>, so captions are written as the
+    image's title attribute and promoted to a real figcaption here.
+
+    Runs on DOMContentLoaded rather than window.onload — onload waits for every
+    image in the post to finish downloading, so captions used to pop in long
+    after the text was readable.
+  {%- endcomment -%}
   <script>
-  function wrap_img(fn) {
-    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
-        var elements = document.querySelectorAll(".post img");
-        Array.prototype.forEach.call(elements, function(el, i) {
-            if (el.getAttribute("title")) {
-                const caption = document.createElement('figcaption');
-                var node = document.createTextNode(el.getAttribute("title"));
-                caption.appendChild(node);
-                const wrapper = document.createElement('figure');
-                wrapper.className = 'image';
-                el.parentNode.insertBefore(wrapper, el);
-                el.parentNode.removeChild(el);
-                wrapper.appendChild(el);
-                wrapper.appendChild(caption);
-            }
-        });
-    } else { document.addEventListener('DOMContentLoaded', fn); }
-  }
-  window.onload = wrap_img;
+  (function () {
+    function wrapImages() {
+      document.querySelectorAll(".post img[title]").forEach(function (el) {
+        var title = el.getAttribute("title");
+        if (!title || el.parentNode.classList.contains("image")) return;
+        var figure = document.createElement("figure");
+        figure.className = "image";
+        var caption = document.createElement("figcaption");
+        caption.appendChild(document.createTextNode(title));
+        el.parentNode.insertBefore(figure, el);
+        figure.appendChild(el);
+        figure.appendChild(caption);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", wrapImages);
+    } else {
+      wrapImages();
+    }
+  })();
   </script>
 
 </head>
