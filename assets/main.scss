@@ -962,6 +962,28 @@ pre {
   }
 
   li { margin: 0; }
+
+  // Hover keeper. The labels sit 0.7rem to the left of the 26px tick strip,
+  // so travelling from a tick out to its label crosses a gap where the
+  // pointer is over neither — :hover would drop and the labels would vanish
+  // just as you reached for them. This inert panel spans ticks + gap +
+  // labels, and only becomes solid to the pointer once the rail is already
+  // open, so it never intercepts clicks on the page behind it.
+  //
+  // It is painted before the list, so labels stay on top and keep receiving
+  // their own clicks.
+  &::before {
+    content: "";
+    position: absolute;
+    top: -0.5rem;
+    bottom: -0.5rem;
+    right: 0;
+    width: calc(26px + 0.7rem + 200px);
+    pointer-events: none;
+  }
+
+  &:hover::before,
+  &:focus-within::before { pointer-events: auto; }
 }
 
 @media screen and (min-width: 1200px) {
@@ -1023,10 +1045,14 @@ pre {
   transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
 }
 
+// Once open, the labels themselves are the target — you can run the pointer
+// down the text and click a title rather than aiming at a 2px tick. They stay
+// inert while collapsed so a 200px invisible strip never eats page clicks.
 .section-rail:hover .rail-label,
 .section-rail:focus-within .rail-label {
   opacity: 1;
   transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
 }
 
 .rail-item:hover .rail-label,
