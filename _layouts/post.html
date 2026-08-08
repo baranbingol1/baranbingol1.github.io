@@ -8,6 +8,13 @@ layout: default
   plugin assigns the layout *name* ("post") to front-matter-less documents, and
   Jekyll then resolves the name from the local _layouts before the theme's.
 {%- endcomment -%}
+{%- comment -%}
+  Reading progress. Decorative and aria-hidden: it duplicates the scrollbar,
+  which is already accessible, and a live role="progressbar" would have screen
+  readers announcing a new value on every scroll tick.
+{%- endcomment -%}
+<div class="reading-progress" aria-hidden="true"><span class="reading-progress-fill"></span></div>
+
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
@@ -55,3 +62,109 @@ layout: default
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
+
+<script>
+// Reading progress fallback. Browsers with animation-timeline do this in CSS
+// on the compositor; this only runs for the rest.
+(function () {
+  var fill = document.querySelector(".reading-progress-fill");
+  if (!fill) return;
+  if (window.CSS && CSS.supports && CSS.supports("animation-timeline: scroll()")) return;
+
+  var queued = false;
+  function update() {
+    queued = false;
+    var d = document.documentElement;
+    var max = d.scrollHeight - d.clientHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, d.scrollTop / max)) : 0;
+    fill.style.clipPath = "inset(0 " + (100 - p * 100) + "% 0 0)";
+  }
+  function onScroll() {
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", onScroll, { passive: true });
+  update();
+})();
+
+// Section rail. Built from the headings themselves rather than from the
+// {:toc} block, so it also works on the two posts that have no {:toc}.
+(function () {
+  var content = document.querySelector(".post-content");
+  if (!content) return;
+
+  var headings = Array.prototype.slice.call(content.querySelectorAll("h2[id], h3[id]"));
+  if (headings.length < 3) return;   // not worth a rail on a short post
+
+  var nav = document.createElement("nav");
+  nav.className = "section-rail";
+  nav.setAttribute("aria-label", "Bölüm gezinmesi");
+  var list = document.createElement("ol");
+
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+  var items = headings.map(function (heading) {
+    var li = document.createElement("li");
+    var link = document.createElement("a");
+    link.className = "rail-item level-" + (heading.tagName === "H2" ? "2" : "3");
+    link.href = "#" + heading.id;
+
+    var label = document.createElement("span");
+    label.className = "rail-label";
+    label.textContent = heading.textContent.trim();
+
+    var tick = document.createElement("span");
+    tick.className = "rail-tick";
+
+    link.appendChild(label);
+    link.appendChild(tick);
+
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      heading.scrollIntoView({
+        behavior: reduceMotion.matches ? "auto" : "smooth",
+        block: "start"
+      });
+      // replaceState, not the default jump: keeps the URL shareable without
+      // adding a history entry for every tick the reader pokes at.
+      history.replaceState(null, "", "#" + heading.id);
+    });
+
+    li.appendChild(link);
+    list.appendChild(li);
+    return { heading: heading, link: link };
+  });
+
+  nav.appendChild(list);
+  document.body.appendChild(nav);
+  nav.classList.add("is-ready");
+
+  var current = -1, queued = false;
+  function update() {
+    queued = false;
+    // -1, not 0: at the top of a post the reader is in the intro, above the
+    // first heading. Highlighting section 1 there would be a lie.
+    var found = -1;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].heading.getBoundingClientRect().top <= 120) found = i;
+      else break;
+    }
+    if (found === current) return;
+    if (current >= 0) {
+      items[current].link.classList.remove("is-active");
+      items[current].link.removeAttribute("aria-current");
+    }
+    current = found;
+    if (current >= 0) {
+      items[current].link.classList.add("is-active");
+      items[current].link.setAttribute("aria-current", "true");
+    }
+  }
+  function onScroll() {
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", onScroll, { passive: true });
+  update();
+})();
+</script>

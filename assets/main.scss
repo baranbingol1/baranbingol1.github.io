@@ -64,6 +64,14 @@
   // highlighting into one colour.
   --selection-bg:  rgba(20, 20, 25, 0.10);
 
+  // Reading progress. Deliberately NOT gold — the accent is ~42deg, so this
+  // sweeps its split-complement: violet 262deg -> blue 221deg -> teal 175deg,
+  // straddling the true complement at ~222deg. Cool against a warm palette
+  // reads as intentional contrast, and it echoes the violet and blue already
+  // present in the syntax tokens.
+  --progress-track:    rgba(23, 22, 26, 0.07);
+  --progress-gradient: linear-gradient(90deg, #7c3aed 0%, #2563eb 52%, #0d9488 100%);
+
   --img-backdrop:  transparent;
   --img-pad:       0px;
 
@@ -109,6 +117,10 @@
 
   // A faint light overlay, not grey — grey would read as dirt on a dark page.
   --selection-bg:  rgba(255, 255, 255, 0.13);
+
+  // Same split-complementary sweep, lifted for a dark background.
+  --progress-track:    rgba(255, 255, 255, 0.08);
+  --progress-gradient: linear-gradient(90deg, #a78bfa 0%, #60a5fa 52%, #2dd4bf 100%);
 
   // Most images here are plots and diagrams exported on white with
   // transparency. Sitting them on a light mat keeps them readable instead of
@@ -882,6 +894,153 @@ pre {
   border-left-color: var(--warn);
 
   .Toast-icon { color: var(--warn); }
+}
+
+// ---------------------------- reading progress -----------------------------
+// Pure CSS where supported: animation-timeline runs on the compositor, so it
+// cannot jank the scroll. A small JS fallback covers older browsers.
+//
+// clip-path rather than scaleX: scaling would squash the gradient into
+// whatever fraction is visible, so the colours would shift as you read.
+// Clipping keeps the gradient anchored across the full viewport width and
+// simply reveals more of it.
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 60;
+  background: var(--progress-track);
+  pointer-events: none;
+}
+
+.reading-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--progress-gradient);
+  clip-path: inset(0 100% 0 0);
+}
+
+@keyframes reading-progress {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@supports (animation-timeline: scroll()) {
+  .reading-progress-fill {
+    animation: reading-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+// ---------------------------- section rail ---------------------------------
+// Tick per heading in the right margin; hovering (or tabbing into) the rail
+// reveals every label at once. Hidden below 1200px, where there is neither a
+// hover state to rely on nor room for an expanded label.
+//
+// 1200px is measured, not guessed. An expanded label reaches
+// viewport - 1.75rem - 26px - 0.7rem - 200px from the left; the content column
+// ends at (viewport + 624) / 2. Those cross at ~1174px, so the label would sit
+// on top of the text at 1100px (by 47px) and at 1150px (by 22px).
+
+.section-rail {
+  display: none;
+  position: fixed;
+  top: 50%;
+  right: 1.75rem;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: 26px;
+  max-height: 76vh;
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li { margin: 0; }
+}
+
+@media screen and (min-width: 1200px) {
+  .section-rail.is-ready { display: block; }
+}
+
+.rail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 1.35rem;
+
+  &:hover { text-decoration: none; }
+  &:focus-visible { outline: none; }
+  &:focus-visible .rail-tick {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
+.rail-tick {
+  display: block;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--border-strong);
+  transition: background-color 0.15s ease, width 0.15s ease;
+}
+
+.rail-item.level-2 .rail-tick { width: 20px; }
+.rail-item.level-3 .rail-tick { width: 11px; opacity: 0.7; }
+
+.rail-item:hover .rail-tick,
+.rail-item.is-active .rail-tick { background: var(--accent); }
+.rail-item.is-active .rail-tick { opacity: 1; }
+
+// Absolutely positioned so the labels never widen the rail — the hover target
+// stays a narrow 26px strip instead of a 250px invisible block.
+.rail-label {
+  position: absolute;
+  right: calc(100% + 0.7rem);
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0.18rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+
+.section-rail:hover .rail-label,
+.section-rail:focus-within .rail-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.rail-item:hover .rail-label,
+.rail-item.is-active .rail-label { color: var(--text); }
+.rail-item:hover .rail-label { border-color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-label,
+  .rail-tick { transition: none; }
+}
+
+@media print {
+  .reading-progress,
+  .section-rail { display: none !important; }
 }
 
 // ------------------------------- footer ------------------------------------
