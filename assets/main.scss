@@ -23,12 +23,16 @@
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --font-mono:  ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  // Full column, used by the header, footer, and by wide blocks inside a post
-  // (code, tables, figures, display math).
-  --measure: 48rem;
-  // Prose column. 48rem ran ~85 characters per line, above the 60-75 comfort
-  // range — and Turkish's long agglutinated words push it wider still.
-  --measure-prose: 39rem;
+  // ONE column for everything — header, footer, prose, code, tables, figures.
+  // 42rem minus the 1.5rem side padding gives a 624px content width, ~73
+  // characters per line (48rem ran ~85, above the 60-75 comfort range, and
+  // Turkish's long agglutinated words push it wider still).
+  //
+  // An earlier revision kept prose at 39rem while letting code and tables
+  // break out to 48rem. Centred, that left every block sharing a midpoint but
+  // no two sharing an edge, which reads as a misalignment bug rather than a
+  // deliberate breakout. A single measure is the right call here.
+  --measure: 42rem;
   --radius: 10px;
   --radius-sm: 6px;
 }
@@ -640,49 +644,12 @@ blockquote {
   .post-content h3 { font-size: 1.18rem; }
 }
 
-// ---------------------------- prose measure --------------------------------
-// Text runs in a narrower column than the wrapper, while code, tables, figures
-// and display math keep the full width so they aren't cramped. Both are
-// centred inside the same wrapper, so the page stays symmetric and the wide
-// blocks read as a deliberate breakout rather than a misalignment.
-
-.post-header,
-.post-nav,
-.post-content > p,
-.post-content > ul,
-.post-content > ol,
-.post-content > dl,
-.post-content > blockquote,
-.post-content > h1,
-.post-content > h2,
-.post-content > h3,
-.post-content > h4,
-.post-content > h5,
-.post-content > h6,
-.post-content > hr,
-.post-content > .Toast {
-  max-width: var(--measure-prose);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-// Nested lists must not re-centre — they indent from their parent.
-.post-content li > ul,
-.post-content li > ol {
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-}
-
 // -------------------------- table of contents ------------------------------
 // kramdown's `{:toc}` emits <ul id="markdown-toc">. Stable hook, so style it
 // as a real contents card.
 
 #markdown-toc {
-  // `auto` on the sides, not 0: this is an ID selector and would otherwise
-  // out-specify the prose-measure rule above and sit off-centre.
-  max-width: var(--measure-prose);
-  margin: 1.75rem auto 2.5rem;
+  margin: 1.75rem 0 2.5rem;
   padding: 1.1rem 1.35rem 1.1rem 2.5rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
