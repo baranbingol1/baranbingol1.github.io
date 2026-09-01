@@ -1,0 +1,34 @@
+{%- comment -%}
+  Theme-paired Manim clip. Files come from tools/manim/render.sh.
+
+    {% include anim.html
+       light="/images/post/foo-light.webp"
+       dark="/images/post/foo-dark.webp"
+       alt="Gradient descent stepping toward a minimum"
+       caption="One gradient step."
+       width="1280"
+       height="720"
+    %}
+
+  loading defaults to lazy. Pass loading="eager" for a post's first image.
+{%- endcomment -%}
+{%- assign loading = include.loading | default: "lazy" -%}
+<figure class="image anim">
+  <img class="anim-light"
+       src="{{ include.light | relative_url }}"
+       alt="{{ include.alt | escape }}"
+       {% if include.width %}width="{{ include.width }}"{% endif %}
+       {% if include.height %}height="{{ include.height }}"{% endif %}
+       loading="{{ loading }}"
+       decoding="async">
+  <img class="anim-dark"
+       src="{{ include.dark | relative_url }}"
+       alt="{{ include.alt | escape }}"
+       {% if include.width %}width="{{ include.width }}"{% endif %}
+       {% if include.height %}height="{{ include.height }}"{% endif %}
+       loading="{{ loading }}"
+       decoding="async">
+  {%- if include.caption -%}
+  <figcaption>{{ include.caption | escape }}</figcaption>
+  {%- endif -%}
+</figure>

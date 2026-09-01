@@ -12,3 +12,8 @@ _notebooks/.ipynb_checkpoints
 # both of these on the classic build.
 .bundle
 Gemfile.lock
+
+# Manim intermediates. Commit only the WebPs under images/.
+tools/manim/media/
+tools/manim/.render-*.webp
+tools/manim/**/__pycache__/

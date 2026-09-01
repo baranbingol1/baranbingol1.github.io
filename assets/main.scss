@@ -791,6 +791,28 @@ figcaption,
   color: var(--text-muted);
 }
 
+// Manim clips are already themed, so they skip the cream plot-mat.
+// Hide the inactive file with the same data-theme switch as the sun/moon icons.
+// Do not use prefers-color-scheme here: the header toggle would be ignored.
+.post-content figure.anim,
+.post figure.anim {
+  margin: 1.75rem 0 1.5rem;
+}
+
+.post-content figure.anim img,
+.post figure.anim img {
+  margin: 0 auto;
+  padding: 0;
+  background: transparent;
+}
+
+figure.anim figcaption {
+  margin-top: 0.5rem;
+}
+
+:root[data-theme="light"] img.anim-dark { display: none; }
+:root[data-theme="dark"]  img.anim-light { display: none; }
+
 // ------------------------------- tables ------------------------------------
 
 table {

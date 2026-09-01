@@ -54,6 +54,8 @@ plugins:
 exclude:
   - tools
   - docker-compose.yml
+  - skills-lock.json
+  - AGENTS.md
 
 titles_from_headings:
   enabled:     true
