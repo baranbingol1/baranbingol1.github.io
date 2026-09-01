@@ -1171,13 +1171,19 @@ pre {
   li { margin-bottom: 0.35rem; }
 }
 
+.social-media-list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .svg-icon {
   width: 16px;
   height: 16px;
-  display: inline-block;
+  display: block;
   fill: var(--text-muted);
-  padding-right: 5px;
-  vertical-align: text-top;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 @media screen and (max-width: 600px) {
