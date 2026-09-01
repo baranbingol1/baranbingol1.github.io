@@ -1,0 +1,21 @@
+{%- comment -%}
+  One <li> per post. Used by the main list and the Turkish archive.
+{%- endcomment -%}
+{%- for post in include.posts -%}
+<li>
+  <span class="post-meta">
+    {{ post.date | date: "%B %-d, %Y" }}
+    {%- assign words = post.content | strip_html | number_of_words -%}
+    <span class="post-meta-sep" aria-hidden="true">·</span>
+    {{ words | divided_by: 200 | plus: 1 }} min read
+  </span>
+  <h3>
+    <a class="post-link" href="{{ post.url | relative_url }}">
+      {{ post.title | escape }}
+    </a>
+  </h3>
+  {%- if site.show_excerpts -%}
+    {{ post.excerpt }}
+  {%- endif -%}
+</li>
+{%- endfor -%}

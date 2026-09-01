@@ -2,10 +2,12 @@
 layout: default
 ---
 {%- comment -%}
-  Overrides minima 2.5.1's _layouts/home.html, which hardcodes the English
-  strings "Posts" and "subscribe via RSS" and an English date format on an
-  otherwise entirely Turkish site.
+  Overrides minima 2.5.1's _layouts/home.html to add reading time and to
+  split current posts from the Turkish archive. Posts with `lang: tr` sit
+  in a <details> block that is closed on load.
 {%- endcomment -%}
+{%- assign archived_posts = site.posts | where: "lang", "tr" -%}
+{%- assign current_posts = site.posts | where_exp: "post", "post.lang != 'tr'" -%}
 <div class="home">
   {%- if page.title -%}
     <h1 class="page-heading">{{ page.title }}</h1>
@@ -13,31 +15,25 @@ layout: default
 
   {{ content }}
 
-  {%- if site.posts.size > 0 -%}
-    <h2 class="post-list-heading">{{ page.list_title | default: "Yazılar" }}</h2>
+  {%- if current_posts.size > 0 -%}
+    <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
     <ul class="post-list">
-      {%- for post in site.posts -%}
-      <li>
-        <span class="post-meta">
-          {%- include date-tr.html date=post.date -%}
-          {%- assign kelime = post.content | strip_html | number_of_words -%}
-          <span class="post-meta-sep" aria-hidden="true">·</span>
-          {{ kelime | divided_by: 200 | plus: 1 }} dk okuma
-        </span>
-        <h3>
-          <a class="post-link" href="{{ post.url | relative_url }}">
-            {{ post.title | escape }}
-          </a>
-        </h3>
-        {%- if site.show_excerpts -%}
-          {{ post.excerpt }}
-        {%- endif -%}
-      </li>
-      {%- endfor -%}
+      {%- include post-list-items.html posts=current_posts -%}
     </ul>
+  {%- endif -%}
 
+  {%- if archived_posts.size > 0 -%}
+    <details class="archive">
+      <summary class="archive-toggle">Old blogs (Turkish)</summary>
+      <ul class="post-list" lang="tr">
+        {%- include post-list-items.html posts=archived_posts -%}
+      </ul>
+    </details>
+  {%- endif -%}
+
+  {%- if site.posts.size > 0 -%}
     <p class="rss-subscribe">
-      <a href="{{ "/feed.xml" | relative_url }}">RSS ile abone olun</a>
+      <a href="{{ "/feed.xml" | relative_url }}">Subscribe via RSS</a>
     </p>
   {%- endif -%}
 

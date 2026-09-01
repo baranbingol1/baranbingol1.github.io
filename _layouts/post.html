@@ -21,15 +21,16 @@ layout: default
     <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- include date-tr.html date=page.date -%}
+        {{ page.date | date: "%B %-d, %Y" }}
       </time>
       {%- comment -%}
-        ~200 wpm is the figure for Turkish; the 265 wpm usually quoted is for
-        English. strip_html so markup isn't counted as words.
+        ~200 wpm is the figure for Turkish, which every current post is;
+        the 265 wpm usually quoted is for English. strip_html so markup
+        isn't counted as words.
       {%- endcomment -%}
-      {%- assign kelime = content | strip_html | number_of_words -%}
+      {%- assign words = content | strip_html | number_of_words -%}
       <span class="post-meta-sep" aria-hidden="true">·</span>
-      <span class="reading-time">{{ kelime | divided_by: 200 | plus: 1 }} dk okuma</span>
+      <span class="reading-time">{{ words | divided_by: 200 | plus: 1 }} min read</span>
       {%- if page.author %}
         <span class="post-meta-sep" aria-hidden="true">·</span>
         <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
@@ -42,10 +43,10 @@ layout: default
   </div>
 
   {%- if page.previous or page.next -%}
-  <nav class="post-nav" aria-label="Diğer yazılar">
+  <nav class="post-nav" aria-label="Post navigation">
     {%- if page.previous -%}
     <a class="post-nav-link post-nav-prev" href="{{ page.previous.url | relative_url }}" rel="prev">
-      <span class="post-nav-label">← Önceki yazı</span>
+      <span class="post-nav-label">← Previous</span>
       <span class="post-nav-title">{{ page.previous.title | escape }}</span>
     </a>
     {%- else -%}
@@ -53,7 +54,7 @@ layout: default
     {%- endif -%}
     {%- if page.next -%}
     <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}" rel="next">
-      <span class="post-nav-label">Sonraki yazı →</span>
+      <span class="post-nav-label">Next →</span>
       <span class="post-nav-title">{{ page.next.title | escape }}</span>
     </a>
     {%- endif -%}
@@ -64,26 +65,51 @@ layout: default
 </article>
 
 <script>
-// Reading progress fallback. Browsers with animation-timeline do this in CSS
-// on the compositor; this only runs for the rest.
+// Reading progress. Always JS: CSS scroll timelines glitch on mobile when
+// the URL bar shows and hides (the scroll range changes under the finger).
 (function () {
+  var bar = document.querySelector(".reading-progress");
   var fill = document.querySelector(".reading-progress-fill");
-  if (!fill) return;
-  if (window.CSS && CSS.supports && CSS.supports("animation-timeline: scroll()")) return;
+  if (!bar || !fill) return;
+
+  // Hoist out of <main>/.wrapper and off the flex <body>. Nested
+  // position:fixed inside a flex body is what made this strip scroll away
+  // or flicker on iOS instead of staying at the top of the screen.
+  document.documentElement.appendChild(bar);
 
   var queued = false;
   function update() {
     queued = false;
-    var d = document.documentElement;
-    var max = d.scrollHeight - d.clientHeight;
-    var p = max > 0 ? Math.min(1, Math.max(0, d.scrollTop / max)) : 0;
-    fill.style.clipPath = "inset(0 " + (100 - p * 100) + "% 0 0)";
+    var vv = window.visualViewport;
+    var viewH = vv ? vv.height : window.innerHeight;
+    var scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    if (vv) scrollY += vv.offsetTop;
+    var max = document.documentElement.scrollHeight - viewH;
+    var p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    fill.style.width = (p * 100) + "%";
+    fill.style.backgroundSize = bar.offsetWidth + "px 100%";
+
+    // Keep the strip glued to the visible top when the visual viewport
+    // pans (URL bar, pinch-zoom). translate3d also keeps the compositor
+    // layer that the CSS translateZ(0) set before this runs.
+    var x = vv ? vv.offsetLeft : 0;
+    var y = vv ? vv.offsetTop : 0;
+    bar.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+    if (vv) {
+      bar.style.left = "0";
+      bar.style.right = "auto";
+      bar.style.width = vv.width + "px";
+    }
   }
   function onScroll() {
     if (!queued) { queued = true; requestAnimationFrame(update); }
   }
   addEventListener("scroll", onScroll, { passive: true });
   addEventListener("resize", onScroll, { passive: true });
+  if (window.visualViewport) {
+    visualViewport.addEventListener("scroll", onScroll, { passive: true });
+    visualViewport.addEventListener("resize", onScroll, { passive: true });
+  }
   update();
 })();
 
@@ -98,7 +124,7 @@ layout: default
 
   var nav = document.createElement("nav");
   nav.className = "section-rail";
-  nav.setAttribute("aria-label", "Bölüm gezinmesi");
+  nav.setAttribute("aria-label", "Section navigation");
   var list = document.createElement("ol");
 
   var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");

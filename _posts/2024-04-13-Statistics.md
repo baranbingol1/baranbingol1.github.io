@@ -1,3 +1,7 @@
+---
+lang: tr
+---
+
 # Veri Bilimcinin İstatistik El Kitabı 
 
 Merhabalar bu yazımda hem kendim için hemde okuyanlar için bakabilecekleri bir kaynak olması açısından bir veri bilimcinin bilmesi gereken istatistiksel konstepleri matematiğe boğmadan ve örneklerle anlatımı zenginleştirerek anlatmaya çalışacağım. Ayrıca temel istatistik dersi veya modelleme dersi alanlar için konuları daha iyi anlamak açısından ve gerçek hayatta kullanımını görmek açısından faydalı bir kaynak olabilir. Bon voyage!

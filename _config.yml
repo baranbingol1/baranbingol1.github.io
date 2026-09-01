@@ -6,21 +6,20 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 
-title: Baran'ın Blogu
-description: Veri Bilimi kavramlarının anlatıldığı bloga hoşgeldiniz!
+title: Baran's Blog
+description: AI Engineer
 github_username: baranbingol1
 
-# The content is Turkish. Without this, minima's layout emits <html lang="en">
-# and jekyll-seo-tag emits og:locale=en_US, telling search engines the wrong
-# language for every page on the site.
-lang: tr-TR
+# English chrome and tagline. Turkish posts set `lang: tr` so they get
+# <html lang="tr"> and land in the homepage archive, not the main list.
+lang: en
 
 # Fallback social-share preview. jekyll-seo-tag reads `page.image`, NOT a
 # top-level `site.image`, so this has to go through Jekyll defaults to apply
 # site-wide. Without it every share rendered as a bare text card.
 # Only `image` is set here — adding `title` or `layout` would disable
-# jekyll-titles-from-headings and jekyll-default-layout, which this site
-# depends on because no post has front matter.
+# jekyll-titles-from-headings and jekyll-default-layout. Posts may set
+# `lang` and `description`, but not those two keys.
 defaults:
   - scope:
       path: ""

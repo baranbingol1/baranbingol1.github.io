@@ -1,3 +1,7 @@
+---
+lang: tr
+---
+
 # Feature Selection(Özellik Seçimi) Nedir ve Örnek Bir Uygulaması
 
 Merhaba, bu yazıda makine öğrenmesi modelleri için özellik seçimi yapmayı(örneğin 50 sütunu olan verisetini özellik seçimi yaparak sütun sayısını 30'a indirmek) bir örnek üzerinde göreceğiz.\

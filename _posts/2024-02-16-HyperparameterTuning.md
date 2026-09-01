@@ -1,3 +1,7 @@
+---
+lang: tr
+---
+
 # Makine Öğrenmesinde Hiperparametre Optimizasyonu
 
 Merhabalar, yeni blog yazıma hoşgeldiniz. Bugün hiperparametre optimizasyonu üzerine konuşacağız, umarım okuyanlara faydalı bir yazı olur!

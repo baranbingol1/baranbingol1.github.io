@@ -3,7 +3,7 @@
 ---
 
 // ---------------------------------------------------------------------------
-// Baran'ın Blogu — stylesheet
+// Baran's Blog — stylesheet
 //
 // This deliberately does NOT `@import "{{ site.theme }}"`. minima 2.5.1 bakes
 // its colours in at Sass compile time (`lighten($text-color, 18%)`,
@@ -489,6 +489,71 @@ blockquote {
   color: var(--text-muted);
 }
 
+// -------------------------- turkish archive --------------------------------
+// Native <details>, closed on load. The summary is the same kind of label
+// as .post-list-heading, plus a caret that tracks [open].
+
+.archive {
+  margin-top: 2.75rem;
+}
+
+.home > .archive:first-child {
+  margin-top: 0;
+}
+
+.archive-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-muted);
+  list-style: none;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+
+  &::-webkit-details-marker,
+  &::marker { display: none; content: none; }
+
+  &:hover { color: var(--text); }
+
+  &:focus { outline: none; }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+}
+
+.archive-toggle::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.42em;
+  height: 0.42em;
+  margin-top: -0.12em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.archive[open] .archive-toggle::before {
+  margin-top: 0;
+  transform: rotate(45deg);
+}
+
+.archive .post-list { margin-top: 0.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-toggle::before { transition: none; }
+}
+
 .post-meta-sep {
   margin: 0 0.45em;
   opacity: 0.55;
@@ -671,7 +736,7 @@ blockquote {
   line-height: 1.55;
 
   &::before {
-    content: "İçindekiler";
+    content: "Contents";
     display: block;
     margin-left: -1rem;
     margin-bottom: 0.6rem;
@@ -897,13 +962,14 @@ pre {
 }
 
 // ---------------------------- reading progress -----------------------------
-// Pure CSS where supported: animation-timeline runs on the compositor, so it
-// cannot jank the scroll. A small JS fallback covers older browsers.
+// JS drives the fill. animation-timeline: scroll() was compositor-cheap on
+// desktop, but on phones the URL bar resizes the scroll range mid-gesture
+// so the bar jumped, and Safari flickers clip-path on position:fixed layers
+// during touch scrolling. A 3px width update is cheaper than that glitch.
 //
-// clip-path rather than scaleX: scaling would squash the gradient into
-// whatever fraction is visible, so the colours would shift as you read.
-// Clipping keeps the gradient anchored across the full viewport width and
-// simply reveals more of it.
+// Width rather than scaleX: scaling would squash the gradient into whatever
+// fraction is visible. background-size is the track's width, so the colours
+// stay anchored and the fill just reveals more of them.
 
 .reading-progress {
   position: fixed;
@@ -914,25 +980,20 @@ pre {
   z-index: 60;
   background: var(--progress-track);
   pointer-events: none;
+  overflow: hidden;
+  // Own compositor layer. Without this, iOS tiles the strip with the
+  // scrolling document and it jitters or vanishes behind the URL bar.
+  transform: translateZ(0);
 }
 
 .reading-progress-fill {
   display: block;
   height: 100%;
-  background: var(--progress-gradient);
-  clip-path: inset(0 100% 0 0);
-}
-
-@keyframes reading-progress {
-  from { clip-path: inset(0 100% 0 0); }
-  to   { clip-path: inset(0 0 0 0); }
-}
-
-@supports (animation-timeline: scroll()) {
-  .reading-progress-fill {
-    animation: reading-progress linear both;
-    animation-timeline: scroll(root block);
-  }
+  width: 0%;
+  background-image: var(--progress-gradient);
+  background-size: 100vw 100%;
+  background-repeat: no-repeat;
+  background-position: left top;
 }
 
 // ---------------------------- section rail ---------------------------------

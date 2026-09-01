@@ -1,3 +1,7 @@
+---
+lang: tr
+---
+
 # Transformerların yapısı ve HuggingFace kütüphanesi kullanımı
 
 Merhabalar! İlk blog yazıma hoşgeldiniz. Bu yazıda ChatGPT'ninde altında bulunan Transformerları (hayır film serisi olan değil) anlamaya çalışacağız ayrıca HuggingFace kütüphanesine de giriş yapacağız.

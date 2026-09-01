@@ -27,9 +27,9 @@ It also warns when a post opens with an image and has no `description:` front
 matter. Jekyll's excerpt would be empty in that case, and the meta description
 silently falls back to the site tagline.
 
-Only `description:` should ever go in a post's front matter. Adding `title:`
+Posts may set `description:` and `lang:` in front matter. Adding `title:`
 or `layout:` disables jekyll-titles-from-headings and jekyll-default-layout,
-which this site relies on because posts have no front matter.
+which this site relies on for the heading-as-title convention.
 """
 
 from __future__ import annotations

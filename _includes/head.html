@@ -139,7 +139,7 @@
   {%- endcomment -%}
   <script>
   (function () {
-    var IDLE = "Kopyala", DONE = "Kopyalandı", FAIL = "Kopyalanamadı";
+    var IDLE = "Copy", DONE = "Copied", FAIL = "Copy failed";
 
     // navigator.clipboard needs a secure context AND a focused document, and
     // rejects with NotAllowedError otherwise. Fall back to a throwaway
@@ -176,10 +176,10 @@
         btn.type = "button";
         btn.className = "copy-code";
         btn.textContent = IDLE;
-        btn.setAttribute("aria-label", "Kod bloğunu kopyala");
+        btn.setAttribute("aria-label", "Copy code");
         btn.addEventListener("click", function () {
           // Reset only once the attempt has settled, so a slow write can't
-          // leave the button stuck showing "Kopyalandı".
+          // leave the button stuck showing "Copied".
           function settle(label) {
             btn.textContent = label;
             clearTimeout(timer);

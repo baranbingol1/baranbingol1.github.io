@@ -1,5 +1,6 @@
 ---
 description: A2C, PPO ve TD3 algoritmalarını teorik olarak inceliyor ve OpenAI Gym'in LunarLander ortamında test ederek performanslarını karşılaştırıyoruz.
+lang: tr
 ---
 
 # Pekiştirmeli Öğrenmede Modern Algoritmalar: A2C, PPO ve TD3'ü LunarLander'da Test Ediyoruz
