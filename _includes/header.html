@@ -89,8 +89,90 @@
     // Sync the button/meta to whatever head.html already resolved. No write.
     apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light', false);
 
-    btn.addEventListener('click', function () {
-      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark', true);
+    // Circular reveal from the toggle (ported from wellbeing-app's theme-reveal):
+    // a View Transition whose root snapshot is clipped by a circle. To light, the
+    // new page expands out of the button (dawn); to dark, the old light page
+    // contracts back into it (dusk). No View Transitions or reduced motion:
+    // switch instantly.
+    var inFlight = false, pending = null, active = null, gen = 0, target = null;
+
+    function reveal(theme) {
+      var current = ++gen;
+      inFlight = true;
+      target = theme;
+      root.setAttribute('data-theme-transition', 'to-' + theme);
+      try {
+        active = document.startViewTransition(function () { apply(theme, true); });
+      } catch (e) {
+        apply(theme, true);
+        settle(current);
+        return;
+      }
+      active.ready.then(function () {
+        if (current !== gen) return;
+        var r = btn.getBoundingClientRect();
+        var w = window.innerWidth, h = window.innerHeight;
+        var x = r.left + r.width / 2, y = r.top + r.height / 2;
+        // Percentages, not pixels: they resolve against the snapshot's own box,
+        // which can differ from the viewport (mobile toolbars, zoom). A circle's
+        // radius % is relative to hypot(w, h) / sqrt(2).
+        var at = 'at ' + (x / w) * 100 + '% ' + (y / h) * 100 + '%';
+        var radius = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) /
+                     (Math.hypot(w, h) / Math.SQRT2) * 100;
+        var path = ['circle(0% ' + at + ')', 'circle(' + radius + '% ' + at + ')'];
+        var opening = theme === 'light';
+        root.animate({ clipPath: opening ? path : path.slice().reverse() }, {
+          duration: 460,
+          easing: 'cubic-bezier(.2, .8, .2, 1)',
+          fill: 'both',
+          pseudoElement: opening ? '::view-transition-new(root)' : '::view-transition-old(root)'
+        });
+      }).catch(function () {});
+      active.finished.finally(function () { settle(current); }).catch(function () {});
+    }
+
+    function settle(current) {
+      if (current !== gen) return;
+      active = null;
+      root.removeAttribute('data-theme-transition');
+      var next = pending;
+      pending = null;
+      // Changing theme CSS while Chromium still holds the snapshots can crash
+      // it; wait two frames before applying a click that interrupted the wipe.
+      if (next) requestAnimationFrame(function () { requestAnimationFrame(function () {
+        inFlight = false;
+        toggle(next);
+      }); });
+      else inFlight = false;
+    }
+
+    function toggle(theme) {
+      if (typeof document.startViewTransition !== 'function' ||
+          (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+        apply(theme, true);
+        return;
+      }
+      if (inFlight) {
+        pending = theme;
+        try { if (active) active.skipTransition(); } catch (e) { /* already done */ }
+        return;
+      }
+      reveal(theme);
+    }
+
+    function onToggleClick() {
+      // Toggle from where the page is heading: mid-reveal, data-theme may not
+      // have been updated yet.
+      var current = pending || (inFlight ? target : root.getAttribute('data-theme'));
+      toggle(current === 'dark' ? 'light' : 'dark');
+    }
+    btn.addEventListener('click', onToggleClick);
+    // During a View Transition the browser hit-tests every click to <html>, so a
+    // second tap on the toggle mid-reveal would be lost. Map it back by position.
+    document.addEventListener('click', function (e) {
+      if (!inFlight || e.target !== root) return;
+      var r = btn.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) onToggleClick();
     });
 
     // Follow the OS live (e.g. an automatic sunset switch), but never override

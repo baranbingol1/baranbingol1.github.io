@@ -213,6 +213,20 @@ body {
 
 main { display: block; }
 
+// Theme switch: circular reveal from the toggle (script in _includes/header.html).
+// Drop the default cross-fade, keep the clipped snapshot on top, and pause colour
+// transitions so the new page is captured fully re-lit, not mid-fade.
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-transition='to-light']::view-transition-new(root),
+html[data-theme-transition='to-dark']::view-transition-old(root) { z-index: 1; }
+html[data-theme-transition] *,
+html[data-theme-transition] *::before,
+html[data-theme-transition] *::after { transition: none !important; }
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
   font-weight: 650;
@@ -749,10 +763,14 @@ blockquote {
 
   li { margin-bottom: 0.22rem; }
 
-  ul {
+  // Sub-headings: indented, no numbers (only the top level is numbered).
+  ul, ol {
     margin-top: 0.22rem;
     margin-bottom: 0.22rem;
+    margin-left: 0;
+    padding-left: 1rem;
     font-size: 0.95em;
+    list-style: none;
   }
 
   a {
@@ -1141,6 +1159,13 @@ pre {
 .rail-item:hover .rail-label,
 .rail-item.is-active .rail-label { color: var(--text); }
 .rail-item:hover .rail-label { border-color: var(--accent); }
+// The hovered (or keyboard-focused) label shows its full title. It grows to the
+// left because it is anchored to the rail on the right, and sits above its neighbours.
+.rail-item:hover .rail-label,
+.rail-item:focus-visible .rail-label {
+  max-width: min(32rem, calc(100vw - 6rem));
+  z-index: 1;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .rail-label,
